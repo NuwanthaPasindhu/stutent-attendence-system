@@ -18,6 +18,11 @@ app.use(cors());
 //DEFINE EXPRESS JSON
 app.use(express.json());
 
+
+// DEFINE ROUTES
+app.use('/api/v1/auth/', authRoutes);
+
+
 // ASSIGN THE PORT 
 const PORT = process.env.PORT || 4000;
 

@@ -4,7 +4,6 @@ const {
   USER_ROLE_SECTION_HEAD,
   USER_ROLE_TEACHER,
 } = require("../enum");
-const OTP = require('../util/otp');
 const userSchema = new mongoose.Schema(
   {
     profilePic: {
@@ -29,6 +28,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    password: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
@@ -41,7 +44,6 @@ const userSchema = new mongoose.Schema(
     },
     otp: {
       type: Number,
-      default: OTP,
     },
     status: {
       type: Boolean,
