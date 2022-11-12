@@ -1,5 +1,6 @@
 const User = require("../model/User");
 const File = require("../model/File");
+const fs = require("fs");
 const { otpVerificationMail } = require("./emailController");
 const { comparePassword, hashPassword } = require("../util/password");
 const {
@@ -89,7 +90,7 @@ module.exports.profilePicUpload = async (request, response) => {
   }
   if (file) {
     const newFile = new File({
-      link: file.filename,
+      link: file.path,
       mimeType: file.mimetype,
     });
 
@@ -103,6 +104,27 @@ module.exports.profilePicUpload = async (request, response) => {
       return;
     }
   }
+ 
+  try {
+    const existingUserById = await User.findById(payload.id);
+    if (existingUserById.profilePic !== undefined) {
+      if (
+        (existingUserWithProfilePic = await existingUserById.populate(
+          "profilePic"
+        ))
+      ) {
+        fs.unlinkSync(existingUserWithProfilePic.profilePic.link);
+        await File.findByIdAndDelete(existingUserById.profilePic._id);
+      }
+    }
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+
   try {
     const existingUserById = await User.findByIdAndUpdate(payload.id, {
       profilePic: saveFile._id,
@@ -121,6 +143,7 @@ module.exports.profilePicUpload = async (request, response) => {
     });
     return;
   }
+
 };
 
 module.exports.profileComplete = async (request, response) => {
@@ -211,8 +234,8 @@ module.exports.resendOtp = async (request, response) => {
       message: error.details,
     });
     return;
-    }
-    
+  }
+
   try {
     const user = await User.findOne({
       email: payload.email,

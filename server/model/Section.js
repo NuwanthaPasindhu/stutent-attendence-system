@@ -1,13 +1,14 @@
 const { default: mongoose } = require("mongoose");
 const sectionSchema = new mongoose.Schema(
   {
-    mimeType: {
+    name: {
       type: String,
       required: true,
+      unique:true
+      
     },
-    link: {
+    details: {
       type: String,
-      required: true,
     },
   },
   { timestamps: true }
