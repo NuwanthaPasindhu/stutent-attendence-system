@@ -9,17 +9,16 @@ const userSchema = new mongoose.Schema(
     profilePic: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: "File",
-      required: true,
     },
     fullName: {
       type: String,
-      required: true,
+      required:true
     },
     mobileNumber: {
       type: String,
-      required: true,
       min: 10,
       max: 11,
+      required:true,
       unique: true,
     },
     email: {
@@ -34,7 +33,6 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-      required: true,
     },
     role: {
       type: String,
@@ -42,12 +40,9 @@ const userSchema = new mongoose.Schema(
       default: USER_ROLE_TEACHER,
       required: true,
     },
-    otp: {
-      type: Number,
-    },
     status: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     profileComplete: {
       type: Boolean,

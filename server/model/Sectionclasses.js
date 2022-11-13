@@ -1,16 +1,11 @@
 const { default: mongoose } = require("mongoose");
 const sectionClassSchema = new mongoose.Schema(
   {
-    sectionId: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Section",
-      required: true,
-    },
-    className: {
+    name: {
       type: String,
       required: true,
     },
-    other: {
+    details: {
       type: String,
     },
   },

@@ -1,0 +1,74 @@
+[
+    {
+        "name": "*",
+        "details": "ADMIN CLASS"
+    },
+    {
+        "name": 1,
+        "details": "CLASS 01"
+    },
+    {
+        "name": 2,
+        "details": "CLASS 02"
+    },
+    {
+        "name": 3,
+        "details": "CLASS 03"
+    },
+    {
+        "name": 4,
+        "details": "CLASS 04"
+    },
+    {
+        "name": 5,
+        "details": "CLASS 05"
+    },
+    {
+        "name": 6,
+        "details": "CLASS 06"
+    },
+    {
+        "name": 7,
+        "details": "CLASS 07"
+    },
+    {
+        "name": 8,
+        "details": "CLASS 08"
+    },
+    {
+        "name": 9,
+        "details": "CLASS 09"
+    },
+    {
+        "name": 10,
+        "details": "CLASS 10"
+    },
+    {
+        "name": 11,
+        "details": "CLASS 11"
+    },
+    {
+        "name": 12,
+        "details": "CLASS 12"
+    },
+    {
+        "name": 13,
+        "details": "CLASS 13"
+    },
+    {
+        "name": 14,
+        "details": "CLASS 14"
+    },
+    {
+        "name": 15,
+        "details": "CLASS 15"
+    },
+    {
+        "name": 16,
+        "details": "CLASS 16"
+    },
+    {
+        "name": 17,
+        "details": "CLASS 17"
+    }
+]

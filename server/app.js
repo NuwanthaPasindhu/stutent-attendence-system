@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // DEFINE STATIC FOLDER
-app.use('/storage',express.static('storage'));
+app.use("/api/v1/storage", express.static("storage"));
 
 
 // DEFINE ROUTES
