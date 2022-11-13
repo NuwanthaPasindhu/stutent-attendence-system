@@ -5,14 +5,10 @@ const {
   authenticatedUser,
   profilePicUpload,
   profileComplete,
-  resendOtp,
-  otpVerification,
 } = require("../controller/authController");
 const { profileUpload } = require("../middleware/fileUpload");
 
 Router.post("/login", login);
-Router.get("/otp/resend", resendOtp);
-Router.post("/otp/verification", otpVerification);
 
 Router.get("/me", api, authenticatedUser);
 Router.put(

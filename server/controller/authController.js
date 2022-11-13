@@ -67,7 +67,6 @@ module.exports.authenticatedUser = async (request, response) => {
   const authenticatedUserWithProfile = await authenticatedUser.populate(
     "profilePic"
   );
-  console.log();
   response.status(200).json({
     status: 200,
     authenticatedUser: authenticatedUser.profilePic
@@ -167,7 +166,16 @@ module.exports.profileComplete = async (request, response) => {
     return;
   }
   try {
-    const existingUserById = await User.findByIdAndUpdate(payload.id, {
+    const existingUserById = await User.findById(payload.id);
+    if (!existingUserById.status) {
+   response.status(400).json({
+     status: 400,
+     message: "Profile Not Activate Please Active Your Account",
+   });
+   return;
+}
+
+    const updateUserById = await User.findByIdAndUpdate(payload.id, {
       fullName: payload.fullName,
       mobileNumber: payload.mobileNumber,
       email: payload.email,
@@ -175,7 +183,7 @@ module.exports.profileComplete = async (request, response) => {
       address: payload.address,
       profileComplete: true,
     });
-    if (existingUserById) {
+    if (updateUserById) {
       response.status(200).json({
         status: 200,
         message: "Profile Updated Successfully",
@@ -188,77 +196,5 @@ module.exports.profileComplete = async (request, response) => {
       message: error.message,
     });
     return;
-  }
-};
-
-module.exports.otpVerification = async (request, response) => {
-  const payload = request.body;
-  const { error } = validateOtp(payload);
-  if (error) {
-    response.status(400).json({
-      status: 400,
-      message: error.details,
-    });
-    return;
-  }
-  const checkOtpExistingUser = await User.findOne({ otp: payload.otp });
-
-  if (checkOtpExistingUser) {
-    const user = await User.findByIdAndUpdate(checkOtpExistingUser._id, {
-      status: true,
-    });
-
-    if (user) {
-      response.status(200).json({
-        status: 200,
-        message: "Account is Activated",
-      });
-      return;
-    }
-  } else {
-    response.status(200).json({
-      status: 200,
-      message: "Invalid OTP or Account is already Activated",
-    });
-    return;
-  }
-};
-
-module.exports.resendOtp = async (request, response) => {
-  const payload = request.body;
-
-  const { error } = validateResendOtp(payload);
-  if (error) {
-    response.status(400).json({
-      status: 400,
-      message: error.details,
-    });
-    return;
-  }
-
-  try {
-    const user = await User.findOne({
-      email: payload.email,
-      status: false,
-    });
-    if (user) {
-      const newOTP = OTP();
-      // CHECK THE OTP EXPIRED OR NOT USING USER ID IF EXISTS UPDATE THE NEW OTP
-      await User.findByIdAndUpdate(user._id, { otp: newOTP });
-      otpVerificationMail(user.email, newOTP);
-      response.status(200).json({
-        status: 200,
-        message: "OTP sended successfully ",
-      });
-      return;
-    }
-  } catch (error) {
-    if (error) {
-      response.status(400).json({
-        status: 400,
-        message: error.message,
-      });
-      return;
-    }
   }
 };
