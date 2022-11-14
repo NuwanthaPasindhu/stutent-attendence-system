@@ -15,6 +15,10 @@ passport.use(
       try {
         const user = await User.findById(jwt_payload.id);
         if (user) {
+          if (user.profilePic) {
+            const userWithProfilePic = await user.populate("profilePic");
+            return done(null, userWithProfilePic);
+          } 
           return done(null, user);
         } else {
           return done(null, false);

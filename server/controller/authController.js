@@ -165,15 +165,38 @@ module.exports.profileComplete = async (request, response) => {
     });
     return;
   }
+
+  //  FIND THE USER BY EMAIL
+  const findUserByEmail = await User.find({ email: payload.email });
+  if (findUserByEmail.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Email already exist",
+    });
+    return;
+  }
+
+  //  FIND THE USER BY MOBILE NUMBER
+  const findUserByMobileNumber = await User.find({
+    mobileNumber: payload.mobileNumber,
+  });
+  if (findUserByMobileNumber.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Mobile Number already exist",
+    });
+    return;
+  }
+
   try {
     const existingUserById = await User.findById(payload.id);
     if (!existingUserById.status) {
-   response.status(400).json({
-     status: 400,
-     message: "Profile Not Activate Please Active Your Account",
-   });
-   return;
-}
+      response.status(400).json({
+        status: 400,
+        message: "Profile Not Activate Please Active Your Account",
+      });
+      return;
+    }
 
     const updateUserById = await User.findByIdAndUpdate(payload.id, {
       fullName: payload.fullName,

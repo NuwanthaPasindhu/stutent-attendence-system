@@ -2,7 +2,8 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const authRoutes = require("./routes/auth");
-const sectionRoutes = require("./routes/admin");
+const adminRoutes = require("./routes/admin");
+const sectionRoutes = require("./routes/sectionHead");
 
 
 // DB CONNECTION
@@ -26,7 +27,8 @@ app.use("/api/v1/storage", express.static("storage"));
 
 // DEFINE ROUTES
 app.use('/api/v1/auth/', authRoutes);
-app.use("/api/v1/sections/", sectionRoutes);
+app.use("/api/v1/sections/", adminRoutes);
+app.use("/api/v1/classes/", sectionRoutes);
 
 
 // ASSIGN THE PORT 
