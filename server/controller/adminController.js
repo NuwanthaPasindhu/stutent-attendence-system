@@ -4,10 +4,11 @@ const UserClasses = require("../model/UserClasses");
 const SectionClass = require("../model/Sectionclasses");
 const { randomPasswordGenerator, hashPassword } = require("../util/password");
 const User = require("../model/User");
-const { validatedSection } = require("../util/validation/adminValidation");
+const { validatedSection } = require("../util/validation/accValidation");
 const { default: mongoose } = require("mongoose");
 const Section = require("../model/Section");
 const { newAccNotification } = require("./emailController");
+
 module.exports.createSectionHead = async (request, response) => {
   const payload = request.body;
   const randomPassword = randomPasswordGenerator();
@@ -144,7 +145,11 @@ module.exports.createSectionHead = async (request, response) => {
 };
 
 module.exports.getAllSections = async (request, response) => {
-  const sections = await Selection.find();
+  const allSections = await Selection.find();
+
+  const sections = allSections.filter(section => {
+    return section.name !== '*'
+  })
   response.status(200).json({
     status: 200,
     sections,
