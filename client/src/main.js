@@ -8,12 +8,17 @@ import "animate.css";
 import "bootstrap";
 import "@/config/axio.config"
 import "@/store/auth/subscriber";
+import SideBar from "@/components/Dashboard/common/SideBar";
+import NavBar from "@/components/Dashboard/common/NavBar.vue";
+import FooterWidget from "@/components/Dashboard/common/FooterWidget";
 
 const app = createApp(App);
 app.use(store);
 app.use(router);
 app.mount("#app");
-
+app.component("side-bar", SideBar);
+app.component("NavBar", NavBar);
+app.component("dashboard-footer", FooterWidget);
 
 if (localStorage.getItem("token")) {
   store.dispatch("auth/attempt", localStorage.getItem("token"));

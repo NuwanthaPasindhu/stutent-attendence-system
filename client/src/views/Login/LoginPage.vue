@@ -75,28 +75,25 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import { reactive, computed } from "vue";
 import useVuelidate from "@vuelidate/core";
 import { required, email, minLength, helpers } from "@vuelidate/validators";
 export default {
-  // computed: mapState({
-  //     User: state => state.auth.user
-  // }),
-  // watch: {
-  //     User(newValue, oldValue) {
-
-  //         if (newValue !== oldValue) {
-  //             this.$router.push('dashboard');
-
-  //         }
-
-  //     }
-  // },
+  computed: mapState({
+    User: (state) => state.auth.user,
+  }),
+  watch: {
+    User(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.$router.push("dashboard");
+      }
+    },
+  },
 
   setup() {
     const state = reactive({
-      email: "admin@admin.com",
+      email: "admin@hnpkdias@gmail.com",
       password: "123456789",
       show: false,
     });

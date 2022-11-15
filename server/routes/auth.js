@@ -5,6 +5,8 @@ const {
   authenticatedUser,
   profilePicUpload,
   profileComplete,
+  profileUpdate,
+  passwordUpdate,
 } = require("../controller/authController");
 const { profileUpload } = require("../middleware/fileUpload");
 
@@ -18,5 +20,7 @@ Router.put(
   profilePicUpload
 );
 Router.put("/profile-complete", api, profileComplete);
+Router.put("/profile-update/:id", api, profileUpdate);
+Router.put("/password-update/:id", api, passwordUpdate);
 
 module.exports = Router;

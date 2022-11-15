@@ -4,7 +4,7 @@ export default {
   namespaced: true,
   state: {
     user: "",
-    token: null,
+    token: "",
   },
   getters: {
     GET_USER(state) {
@@ -39,17 +39,10 @@ export default {
         try {
           let response = await axios.get("/auth/me");
           commit("SET_AUTH_USER", response.data.authenticatedUser);
-          localStorage.setItem("role", response.data.authenticatedUser.role);
-          localStorage.setItem(
-            "completed",
-            response.data.authenticatedUser.profileComplete
-          );
         } catch (error) {
           commit("SET_TOKEN", null);
           commit("SET_AUTH_USER", null);
           localStorage.removeItem("token");
-          localStorage.removeItem("role");
-          localStorage.removeItem("completed");
           router.push("/");
         }
       } else {
@@ -59,15 +52,12 @@ export default {
     },
 
     async logout({ commit }) {
-      let response = await axios.post("auth/logout");
-      if (response.data.status == 200) {
         commit("SET_TOKEN", null);
         commit("SET_AUTH_USER", null);
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         localStorage.removeItem("completed");
-        router.replace("/");
-      }
+
     },
   },
 };

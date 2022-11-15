@@ -17,7 +17,7 @@ module.exports.adminRoleCheck = adminRoleCheck;
 
 const sectionHeadRoleCheck = async (request, response, next) => {
 
-  if (request.user.role === USER_ROLE_SECTION_HEAD) {
+  if (request.user.role === USER_ROLE_SECTION_HEAD || USER_ROLE_ADMIN) {
     next();
   } else {
     response.status(401).json({
@@ -32,7 +32,11 @@ module.exports.sectionHeadRoleCheck = sectionHeadRoleCheck;
 
 const teacherRoleCheck = async (request, response, next) => {
 
-  if (request.user.role === USER_ROLE_TEACHER) {
+  if (
+    request.user.role === USER_ROLE_SECTION_HEAD ||
+    USER_ROLE_ADMIN ||
+    USER_ROLE_TEACHER
+  ) {
     next();
   } else {
     response.status(401).json({
