@@ -4,6 +4,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const sectionRoutes = require("./routes/sectionHead");
+const commonRoutes = require("./routes/common");
 
 
 // DB CONNECTION
@@ -29,6 +30,7 @@ app.use("/api/v1/storage", express.static("storage"));
 app.use('/api/v1/auth/', authRoutes);
 app.use("/api/v1/sections/", adminRoutes);
 app.use("/api/v1/classes/", sectionRoutes);
+app.use("/api/v1/details/", commonRoutes);
 
 
 // ASSIGN THE PORT 

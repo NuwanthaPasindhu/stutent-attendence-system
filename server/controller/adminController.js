@@ -24,28 +24,6 @@ module.exports.createSectionHead = async (request, response) => {
     return;
   }
 
-  //  FIND THE USER BY EMAIL
-  const findUserByEmail = await User.find({ email: payload.email });
-  if (findUserByEmail.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Email already exist",
-    });
-    return;
-  }
-
-  //  FIND THE USER BY MOBILE NUMBER
-  const findUserByMobileNumber = await User.find({
-    mobileNumber: payload.mobileNumber,
-  });
-  if (findUserByMobileNumber.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Mobile Number already exist",
-    });
-    return;
-  }
-
   // CHECK SECTION ID IS A REAL OBJECT ID
   if (!mongoose.Types.ObjectId.isValid(payload.section)) {
     response.status(400).json({
@@ -54,16 +32,17 @@ module.exports.createSectionHead = async (request, response) => {
     });
     return;
   }
-
-  // CHECKING IF THE SECTION ID EXISTS
-  const checkSectionIdExist = await Section.findById(payload.section);
-  if (!checkSectionIdExist) {
+  // CHECK USER ID IS A REAL OBJECT ID
+  if (!mongoose.Types.ObjectId.isValid(payload.userID)) {
     response.status(400).json({
       status: 400,
-      message: "Invalid Section ID",
+      message: "Invalid ObjectId",
     });
     return;
   }
+
+  //  FIND THE USER BY userID
+  const findUserByEmail = await User.findById(payload.userID);
 
   // FETCH ADMIN CLASS
   const adminClass = await SectionClass.findOne({
@@ -84,18 +63,30 @@ module.exports.createSectionHead = async (request, response) => {
     });
     return;
   }
+  // CHECKING IF THE SECTION HEAD ALL READY ASSIGNED TO THE CLASS
+  const checkSectionHeadExisting = await UserClasses.findOne({
+    year: payload.year,
+    userId: payload.userID,
+  });
+  if (checkSectionHeadExisting) {
+  
+    const sectionHeadExistingClass = await checkSectionHeadExisting.populate([
+      "classId",
+      "sectionId",
+    ]);
+    response.status(400).json({
+      status: 400,
+      message: `${findUserByEmail.fullName} is already assigned to  the ${sectionHeadExistingClass.sectionId.details} ,${sectionHeadExistingClass.classId.details}`,
+    });
+    return;
+  }
 
-  // CREATE THE USER
+  // UPDATE THE USER
   try {
-    const newUser = new User({
-      fullName: payload.SectionHeadName,
-      email: payload.email,
-      mobileNumber: payload.mobileNumber,
+    await User.findByIdAndUpdate(payload.userID, {
       password: hashPassword(randomPassword),
       role: USER_ROLE_SECTION_HEAD,
     });
-
-    latestUser = await newUser.save();
   } catch (error) {
     response.status(400).json({
       status: 400,
@@ -109,7 +100,7 @@ module.exports.createSectionHead = async (request, response) => {
     const newSectionHead = new UserClasses({
       classId: adminClass._id,
       sectionId: payload.section,
-      userId: latestUser._id,
+      userId: payload.userID,
       year: payload.year,
     });
     await newSectionHead.save();
@@ -124,8 +115,8 @@ module.exports.createSectionHead = async (request, response) => {
   // SEND MAIL
   try {
     newAccNotification(
-      payload.email,
-      payload.SectionHeadName,
+      findUserByEmail.email,
+      findUserByEmail.fullName,
       randomPassword,
       USER_ROLE_SECTION_HEAD
     );
@@ -147,13 +138,28 @@ module.exports.createSectionHead = async (request, response) => {
 module.exports.getAllSections = async (request, response) => {
   const allSections = await Selection.find();
 
-  const sections = allSections.filter(section => {
-    return section.name !== '*'
-  })
+  const sections = allSections.filter((section) => {
+    return section.name !== "*";
+  });
   response.status(200).json({
     status: 200,
     sections,
   });
   return;
 };
+module.exports.getSelectedSections = async (request, response) => {
+ const params = request.params;
+  const sectionClasses = await UserClasses.find({
+    sectionId: params.id,
+    year: params.year,
+  }).populate('userId');
 
+console.log('====================================');
+
+console.log('====================================');
+  response.status(200).json({
+    status: 200,
+    sectionClasses,
+  });
+  return;
+};
