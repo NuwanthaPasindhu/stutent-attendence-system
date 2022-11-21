@@ -29,22 +29,15 @@
                 </div>
                 <form>
                   <div class="row mb-3">
-                    <div class="col-lg-12 col-md-12 my-2">
+                    <div class="col-lg-6 col-md-12 my-2">
                       <span class="label">Select the User</span>
 
                       <UserList @selected_user="selected_user" />
                     </div>
-                  </div>
-
-                  <div class="row mb-3">
                     <div class="col-lg-6 col-md-12 my-2">
-                      <span class="label">Select the section</span>
+                      <span class="label">Select the User</span>
 
-                      <SectionList @selected_section="selected_section" />
-                    </div>
-                    <div class="col-lg-6 col-md-12 my-2">
-                      <span class="label">Year</span>
-                      <YearSelector @year="selected_year" />
+                      <SectionClassList @selected_class="selected_class" />
                     </div>
                   </div>
 
@@ -181,21 +174,20 @@
                     </thead>
                     <tbody>
                       <tr
-                        v-for="(row, key) in TableConfig.TableData"
+                        v-for="(sectionClass, key) in TableConfig.TableData"
                         :key="key"
                       >
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.details }}</td>
-                        <td><YearSelector @year="selectedSectionYear" /></td>
+                        <td>{{ key + 1 }}</td>
                         <td>
-                          <button
-                            class="btn btn-success"
-                            @click="get_details(row._id)"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
-                          >
-                            Details
-                          </button>
+                          {{
+                            sectionClass.name > 9
+                              ? `Class ${sectionClass.name}`
+                              : `Class 0${sectionClass.name}`
+                          }}
+                        </td>
+                        <td>{{ sectionClass.details }}</td>
+                        <td>
+                          <button class="btn btn-success">Details</button>
                         </td>
                       </tr>
                     </tbody>
@@ -211,99 +203,18 @@
     <!-- Dashboard  Contents -->
     <!-- Button trigger modal -->
     <!-- Modal -->
-    <div
-      class="modal fade"
-      id="exampleModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title heading" id="exampleModalLabel">
-              Section Details
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Class Year</th>
-                    <th>Class Name</th>
-                    <th>Class Details</th>
-                    <!-- <th>Profile Pic</th> -->
-                    <th>Class Teacher</th>
-                    <th>Class Teacher Address</th>
-                    <th>Class Teacher Mobile Number</th>
-                    <th>Class Teacher Email</th>
-                    <th>Class Teacher Profile Status</th>
-                    <th>Class Teacher Profile complete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(section, key) in section_details" :key="key">
-                    <td>{{ key + 1 }}</td>
-                    <td>{{ section.year }}</td>
-                    <td>{{ section.classId.name }}</td>
-                    <td>{{ section.classId.details }}</td>
-                    <!-- <td><img :src="section.get_user.profile_pic" alt="Profile Picture"
-                                                class="profilePic"></td> -->
-                    <td>{{ section.userId.fullName }}</td>
-                    <td>{{ section.userId.address }}</td>
-                    <td>{{ section.userId.mobileNumber }}</td>
-                    <td>{{ section.userId.email }}</td>
-                    <td>
-                      <span
-                        class="badge"
-                        :class="
-                          section.userId.status ? ' bg-success' : 'bg-danger'
-                        "
-                      >
-                        {{ section.userId.status }}</span
-                      >
-                    </td>
-                    <td>
-                      <span
-                        class="badge"
-                        :class="
-                          section.userId.profileComplete
-                            ? ' bg-success'
-                            : 'bg-danger'
-                        "
-                      >
-                        {{ section.userId.profileComplete }}</span
-                      >
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </main>
 </template>
 
 <script>
-import SectionList from "@/components/Dashboard/sections/SectionList.vue";
 import UserList from "@/components/Dashboard/Users/UserList.vue";
-import YearSelector from "@/components/Dashboard/years/YearSelector.vue";
 import axios from "axios";
 import { reactive } from "vue";
 import LoaderView from "@/components/loader/LoaderView.vue";
+import SectionClassList from "@/components/Dashboard/sectionClasses/SectionClassList.vue";
 export default {
   created() {
-    this.sections();
+    this.sectionClasses();
   },
   setup() {
     const state = reactive({
@@ -320,47 +231,25 @@ export default {
       errorMessage: null,
       success: null,
       sending: false,
-      section_details: null,
-      sectionYear: new Date().getFullYear(),
       nav_active: false,
       TableConfig: {
         TableData: {},
-        TableHeaders: ["Section", "Additional Data", "Year", "more details"],
-        Heading: "Sections",
+        TableHeaders: ["#", "Class", "Other", "more details"],
+        Heading: "Classes",
       },
       selectedUser: null,
+      selectedClass: null,
     };
   },
   methods: {
     toggle(value) {
       this.nav_active = value;
     },
-    selected_year(year) {
-      this.state.year = year;
-    },
-    selectedSectionYear(year) {
-      this.sectionYear = year;
-    },
-    selected_user(user) {
-      this.state.userID = user;
+    sectionClasses() {
       axios
-        .get(`/details/users/${user}`)
-        .then((response) => {
-          this.selectedUser = response.data.user;
-          this.errorMessage = null;
-        })
-        .catch((error) => {
-          this.errorMessage = error.response.data.message;
-        });
-    },
-    selected_section(section) {
-      this.state.section = section;
-    },
-    sections() {
-      axios
-        .get("sections/all")
+        .get("classes/all")
         .then((r) => {
-          this.TableConfig.TableData = r.data.sections;
+          this.TableConfig.TableData = r.data.classes;
         })
         .catch((e) => {
           console.log(e);
@@ -389,18 +278,24 @@ export default {
           this.sending = false;
         });
     },
-    get_details(id) {
+
+    selected_user(user) {
+      this.state.userID = user;
       axios
-        .get(`sections/details/${id}/${this.sectionYear}`)
+        .get(`/details/users/${user}`)
         .then((response) => {
-          this.section_details = response.data.sectionClasses;
+          this.selectedUser = response.data.user;
+          this.errorMessage = null;
         })
-        .catch((e) => {
-          console.log(e);
+        .catch((error) => {
+          this.errorMessage = error.response.data.message;
         });
     },
+    selected_class(selectedClass) {
+      this.selectedClass = selectedClass;
+    },
   },
-  components: { SectionList, YearSelector, LoaderView, UserList },
+  components: { LoaderView, UserList, SectionClassList },
 };
 </script>
 

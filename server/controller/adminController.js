@@ -69,7 +69,6 @@ module.exports.createSectionHead = async (request, response) => {
     userId: payload.userID,
   });
   if (checkSectionHeadExisting) {
-  
     const sectionHeadExistingClass = await checkSectionHeadExisting.populate([
       "classId",
       "sectionId",
@@ -147,16 +146,13 @@ module.exports.getAllSections = async (request, response) => {
   });
   return;
 };
+
 module.exports.getSelectedSections = async (request, response) => {
- const params = request.params;
+  const params = request.params;
   const sectionClasses = await UserClasses.find({
     sectionId: params.id,
     year: params.year,
-  }).populate('userId');
-
-console.log('====================================');
-
-console.log('====================================');
+  }).populate([{ path: "userId" }, { path: "sectionId" }, { path: "classId" }]);
   response.status(200).json({
     status: 200,
     sectionClasses,

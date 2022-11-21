@@ -1,3 +1,4 @@
+const UserClasses = require("../model/UserClasses");
 const User = require("../model/User");
 const File = require("../model/File");
 const fs = require("fs");
@@ -11,6 +12,7 @@ const {
 } = require("../util/validation/authValidation");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
+const { USER_ROLE_ADMIN } = require("../enum");
 
 module.exports.login = async (request, response) => {
   const payload = request.body;
@@ -321,7 +323,7 @@ module.exports.passwordUpdate = async (request, response) => {
     }
 
     const updateUserById = await User.findByIdAndUpdate(params.id, {
-      password:hashPassword(payload.password),
+      password: hashPassword(payload.password),
     });
     if (updateUserById) {
       response.status(200).json({

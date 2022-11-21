@@ -13,9 +13,15 @@
           <div class="col-lg-4 col-md-12 mb-5">
             <div class="card shadow-sm">
               <div class="card-head profile_card">
-                <img 
-                 :src="user.profilePic ? `http://www.localhost:4000/api/v1/${user.profilePic.link}`:null"
-                class="profile_pic" alt="" />
+                <img
+                  :src="
+                    user.profilePic
+                      ? `http://www.localhost:4000/api/v1/${user.profilePic.link}`
+                      : null
+                  "
+                  class="profile_pic"
+                  alt=""
+                />
               </div>
             </div>
           </div>
@@ -41,10 +47,6 @@
                       <tr>
                         <th>Email</th>
                         <td>{{ user.email }}</td>
-                      </tr>
-                      <tr v-if="user.role !== 'ADMIN'">
-                        <th>Class</th>
-                        <td>{{ user }}</td>
                       </tr>
                     </table>
                   </div>

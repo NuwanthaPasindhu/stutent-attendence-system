@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router";
 
 import LoginPage from "@/views/Login/LoginPage";
 import ForgotPassword from "@/views/ForgotPassword/ForgotPassword";
@@ -7,7 +7,10 @@ import PasswordUpdate from "@/views/ForgotPassword/PasswordUpdate";
 import DashboardIndex from "@/views/Dashboard/DashboardIndex";
 import AccountDetails from "@/views/Dashboard/Account/AccountDetails";
 import AddSection from "@/views/Dashboard/sections/add/AddSection";
+import TeacherData from "@/views/Dashboard/data/TeacherData";
 import LogOut from "@/views/Dashboard/LogOut";
+
+import AddClasses from "@/views/Dashboard/Classses/add/AddClasses";
 
 const routes = [
   // Dashboard URLs
@@ -35,6 +38,20 @@ const routes = [
     component: AddSection,
     // beforeEnter: admin,
   },
+  {
+    path: "/dashboard/add-bulk-data",
+    name: "TeacherData",
+    component: TeacherData,
+    // beforeEnter: admin,
+  },
+
+  // section head Access Url
+  {
+    path: "/dashboard/add-class",
+    name: "AddClasses",
+    component: AddClasses,
+    // beforeEnter: admin,
+  },
 
   // Public Access Url
   {
@@ -60,7 +77,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;
