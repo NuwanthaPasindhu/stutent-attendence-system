@@ -187,7 +187,14 @@
                         </td>
                         <td>{{ sectionClass.details }}</td>
                         <td>
-                          <button class="btn btn-success">Details</button>
+                          <button
+                            class="btn btn-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                            @click.prevent="getData(sectionClass._id)"
+                          >
+                            Details
+                          </button>
                         </td>
                       </tr>
                     </tbody>
@@ -202,6 +209,56 @@
     </div>
     <!-- Dashboard  Contents -->
     <!-- Button trigger modal -->
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title heading" id="exampleModalLabel">
+              Section Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Class Year</th>
+                    <th>Class Name</th>
+                    <th>Class Details</th>
+                    <th>Profile Pic</th>
+                    <th>Class Teacher</th>
+                    <th>Class Teacher Address</th>
+                    <th>Class Teacher Mobile Number</th>
+                    <th>Class Teacher Email</th>
+                    <th>Class Teacher Profile Status</th>
+                    <th>Class Teacher Profile complete</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Modal -->
   </main>
 </template>
@@ -219,7 +276,7 @@ export default {
   setup() {
     const state = reactive({
       userID: "",
-      section: "",
+      selectedClass: "",
       year: "",
     });
 
@@ -237,8 +294,6 @@ export default {
         TableHeaders: ["#", "Class", "Other", "more details"],
         Heading: "Classes",
       },
-      selectedUser: null,
-      selectedClass: null,
     };
   },
   methods: {
@@ -260,7 +315,10 @@ export default {
       this.errorMessage = null;
       this.errors = null;
       axios
-        .post("/sections/create", this.state)
+        .post("/classes/create", {
+          userID: this.state.userID,
+          sectionClass: this.state.selectedClass,
+        })
         .then((response) => {
           if (response.data.status == 201) {
             this.success = response.data.message;
@@ -292,7 +350,10 @@ export default {
         });
     },
     selected_class(selectedClass) {
-      this.selectedClass = selectedClass;
+      this.state.selectedClass = selectedClass;
+    },
+    getData(classId) {
+      console.log(classId);
     },
   },
   components: { LoaderView, UserList, SectionClassList },

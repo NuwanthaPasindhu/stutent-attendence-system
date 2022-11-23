@@ -23,17 +23,18 @@
 </template>
 
 <script>
-import QrCodeReader from "@/components/Dashboard/attendance/QrCodeReader.vue";
+import QrCodeReader from "@/components/Dashboard/attendance/QrCodeReader";
+
 export default {
+  components: { QrCodeReader },
   data() {
     return {
       nav_active: false,
       attendance_history: [],
+      errorMessage: "",
     };
   },
-  components: {
-    QrCodeReader,
-  },
+
   methods: {
     toggle(value) {
       this.nav_active = value;
