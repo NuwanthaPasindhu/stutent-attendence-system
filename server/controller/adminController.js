@@ -85,6 +85,7 @@ module.exports.createSectionHead = async (request, response) => {
     await User.findByIdAndUpdate(payload.userID, {
       password: hashPassword(randomPassword),
       role: USER_ROLE_SECTION_HEAD,
+      status: true,
     });
   } catch (error) {
     response.status(400).json({

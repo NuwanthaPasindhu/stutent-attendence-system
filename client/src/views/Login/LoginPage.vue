@@ -46,11 +46,18 @@
                     v-model="state.password"
                     :class="v$.password.$error ? 'error' : null"
                   />
-
                   <box-icon
+                    type="solid"
                     :name="state.show ? 'hide' : 'show'"
-                    class="eye"
                     @click="state.show = !state.show"
+                    style="
+                      width: 50px;
+                      height: 50px;
+                      position: absolute;
+                      top: -5px;
+                      right: 10px;
+                      cursor: pointer;
+                    "
                   ></box-icon>
                 </div>
               </div>
@@ -186,13 +193,6 @@ section.container-fluid {
 
     .password-row {
       position: relative;
-
-      .eye {
-        position: absolute;
-        top: 5px;
-        right: -82%;
-        cursor: pointer;
-      }
     }
 
     input {

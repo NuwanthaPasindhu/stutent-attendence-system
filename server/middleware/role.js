@@ -1,7 +1,10 @@
-const { USER_ROLE_ADMIN, USER_ROLE_SECTION_HEAD, USER_ROLE_TEACHER } = require("../enum");
+const {
+  USER_ROLE_ADMIN,
+  USER_ROLE_SECTION_HEAD,
+  USER_ROLE_TEACHER,
+} = require("../enum");
 
 const adminRoleCheck = async (request, response, next) => {
-
   if (request.user.role === USER_ROLE_ADMIN) {
     next();
   } else {
@@ -16,7 +19,6 @@ const adminRoleCheck = async (request, response, next) => {
 module.exports.adminRoleCheck = adminRoleCheck;
 
 const sectionHeadRoleCheck = async (request, response, next) => {
-
   if (request.user.role === USER_ROLE_SECTION_HEAD || USER_ROLE_ADMIN) {
     next();
   } else {
@@ -31,7 +33,6 @@ const sectionHeadRoleCheck = async (request, response, next) => {
 module.exports.sectionHeadRoleCheck = sectionHeadRoleCheck;
 
 const teacherRoleCheck = async (request, response, next) => {
-
   if (
     request.user.role === USER_ROLE_SECTION_HEAD ||
     USER_ROLE_ADMIN ||

@@ -11,7 +11,7 @@
           <div class="col-lg-6 col-md-12">
             <div class="card shadow w-100">
               <div class="card-head">
-                <h1>Add Sections</h1>
+                <h1>Add Classes</h1>
               </div>
               <div class="card-body">
                 <div class="alert alert-danger" v-if="errorMessage">
@@ -358,7 +358,7 @@ main {
     .card-head {
       height: 200px;
       background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-        url("@/assets/Dashboard/Sections/banner.jpg");
+        url("@/assets/Dashboard/Classes/banner.jpg");
       background-size: cover;
       background-position: center center;
       display: flex;

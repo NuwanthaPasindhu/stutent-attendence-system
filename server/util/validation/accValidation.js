@@ -10,8 +10,8 @@ const sectionValidationSchema = Joi.object({
 });
 
 const teacherValidationSchema = Joi.object({
-  class: Joi.string().required().trim(),
-  year: Joi.date().required(),
+  sectionClass: Joi.string().required().trim(),
+  userID: Joi.string().required().trim(),
 });
 
 module.exports.validatedSection = validator(sectionValidationSchema);

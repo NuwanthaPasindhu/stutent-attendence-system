@@ -12,6 +12,8 @@ import LogOut from "@/views/Dashboard/LogOut";
 
 import AddClasses from "@/views/Dashboard/Classses/add/AddClasses";
 
+import AttendanceMark from "@/views/Dashboard/attendance/AttendanceMark";
+
 const routes = [
   // Dashboard URLs
   {
@@ -50,6 +52,13 @@ const routes = [
     path: "/dashboard/add-class",
     name: "AddClasses",
     component: AddClasses,
+    // beforeEnter: admin,
+  },
+  // Teacher  Access Url
+  {
+    path: "/dashboard/attendance",
+    name: "AttendanceMark",
+    component: AttendanceMark,
     // beforeEnter: admin,
   },
 

@@ -1,10 +1,10 @@
 <template>
   <form class="py-2">
-    <div class="alert alert-danger" v-if="state.errorMessage.length >0">
+    <div class="alert alert-danger" v-if="state.errorMessage.length > 0">
       <ul>
-  <li v-for="(message, key) in state.errorMessage" :key="key">
-                    {{ message.message }}
-                </li>
+        <li v-for="(message, key) in state.errorMessage" :key="key">
+          {{ message.message }}
+        </li>
       </ul>
     </div>
     <div class="alert alert-success" v-if="state.successMessage">
@@ -88,14 +88,14 @@ export default {
       mobileNumber: store.getters["auth/GET_USER"].mobileNumber,
       address: store.getters["auth/GET_USER"].address,
       email: store.getters["auth/GET_USER"].email,
-      errorMessage:[],
+      errorMessage: [],
       successMessage: "",
     });
     const rules = computed(() => {
       return {
         fullName: {
           required: helpers.withMessage(
-            "The mobile number field is required",
+            "The Full Name field is required",
             required
           ),
         },
@@ -148,7 +148,8 @@ export default {
     handleSubmit() {
       this.v$.$validate();
       if (!this.v$.$error) {
-        axios.put("auth/profile-update/" + this.user._id, {
+        axios
+          .put("auth/profile-update/" + this.user._id, {
             fullName: this.state.fullName,
             mobileNumber: this.state.mobileNumber,
             address: this.state.address,
@@ -158,18 +159,15 @@ export default {
             this.state.successMessage = response.data.message;
             this.attempt(localStorage.getItem("token"));
           })
-            .catch((e) => {
-                if (typeof e.response.data.message === "string") { 
-                    
-                    console.log(typeof e.response.data.message)
-                    this.state.errorMessage.push({
-                         "message": e.response.data.message,
-                    })
-                } else {
-                    
-                    this.state.errorMessage= 
-                  e.response.data.message
-                }
+          .catch((e) => {
+            if (typeof e.response.data.message === "string") {
+              console.log(typeof e.response.data.message);
+              this.state.errorMessage.push({
+                message: e.response.data.message,
+              });
+            } else {
+              this.state.errorMessage = e.response.data.message;
+            }
           });
       }
     },

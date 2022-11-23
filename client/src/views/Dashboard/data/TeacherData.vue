@@ -8,13 +8,34 @@
       <!-- Nav Bar End  -->
       <div class="container py-4 my-5">
         <div class="row">
-          <div class="col-lg-12 col-md-12 mb-4">
+          <div class="col-lg-8 col-md-12 mb-4">
             <div class="card shadow-sm">
               <div class="card-head">
                 <h1>Upload Teachers</h1>
               </div>
               <div class="card-body">
                 <DataUploader />
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-12 mb-4">
+            <div class="card shadow-sm">
+              <div class="card-head">
+                <h1>Download the excel file to be filled</h1>
+              </div>
+              <div class="card-body">
+                <button type="button" class="btn w-100">
+                  <box-icon
+                    name="cloud-download"
+                    class="d-block mx-auto"
+                    size="large"
+                    type="solid"
+                    animation="fade-down"
+                  ></box-icon>
+                  <span class="bg-success p-2 rounded text-light"
+                    >Click here to download</span
+                  >
+                </button>
               </div>
             </div>
           </div>
