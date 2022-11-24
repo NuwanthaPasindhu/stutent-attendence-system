@@ -39,6 +39,11 @@ export default {
         try {
           let response = await axios.get("/auth/me");
           commit("SET_AUTH_USER", response.data.authenticatedUser);
+          localStorage.setItem("role", response.data.authenticatedUser.role);
+          localStorage.setItem(
+            "accComplete",
+            response.data.authenticatedUser.profileComplete
+          );
         } catch (error) {
           commit("SET_TOKEN", null);
           commit("SET_AUTH_USER", null);
@@ -52,12 +57,11 @@ export default {
     },
 
     async logout({ commit }) {
-        commit("SET_TOKEN", null);
-        commit("SET_AUTH_USER", null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("completed");
-
+      commit("SET_TOKEN", null);
+      commit("SET_AUTH_USER", null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      localStorage.removeItem("accComplete");
     },
   },
 };

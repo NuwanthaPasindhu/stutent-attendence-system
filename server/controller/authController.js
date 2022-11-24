@@ -165,17 +165,6 @@ module.exports.profileComplete = async (request, response) => {
     });
     return;
   }
-
-  //  FIND THE USER BY EMAIL
-  const findUserByEmail = await User.find({ email: payload.email });
-  if (findUserByEmail.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Email already exist",
-    });
-    return;
-  }
-
   //  FIND THE USER BY MOBILE NUMBER
   const findUserByMobileNumber = await User.find({
     mobileNumber: payload.mobileNumber,

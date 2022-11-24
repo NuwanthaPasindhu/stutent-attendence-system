@@ -1,8 +1,5 @@
 [
     {
-        "_id": {
-            "$oid": "636e60bce3221f9f3d0cfcd1"
-        },
         "fullName": "Admin",
         "mobileNumber": "0123456789",
         "email": "admin@admin.com",
@@ -10,12 +7,6 @@
         "role": "ADMIN",
         "status": true,
         "profileComplete": false,
-        "password": "$2a$10$JlkaiCIbJdFncLa3xC.OSOSKSXYFG9C648vv/P/wD/O1FYXI6N8cK",
-        "updatedAt": {
-            "$date": {
-                "$numberLong": "1668260176281"
-            }
-        }
-       
+        "password": "$2a$10$JlkaiCIbJdFncLa3xC.OSOSKSXYFG9C648vv/P/wD/O1FYXI6N8cK"
     }
 ]

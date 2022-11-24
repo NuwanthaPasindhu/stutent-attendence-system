@@ -13,7 +13,7 @@
               <div class="card-head">
                 <h1>Student Attendance</h1>
               </div>
-              <QrCodeReader />
+              <QrCodeReader @decoded="decoded" />
             </div>
           </div>
         </div>
@@ -38,6 +38,9 @@ export default {
   methods: {
     toggle(value) {
       this.nav_active = value;
+    },
+    decoded(value) {
+      console.log(value);
     },
   },
 };

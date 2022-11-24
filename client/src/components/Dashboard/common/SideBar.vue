@@ -51,8 +51,41 @@
                   <span>Add Sections</span>
                 </router-link>
               </li>
+              <li class="nav-item">
+                <router-link to="/dashboard/add-teacher" class="nav-link">
+                  <box-icon
+                    name="building"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+                  <span>Add Teacher</span>
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link to="/dashboard/add-admin" class="nav-link">
+                  <box-icon
+                    name="building"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+                  <span>Add Admin</span>
+                </router-link>
+              </li>
             </template>
             <template v-if="user.role == 'SECTION_HEAD'">
+              <li class="nav-item">
+                <router-link to="/dashboard/add-teacher" class="nav-link">
+                  <box-icon
+                    name="building"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+                  <span>Add Teacher</span>
+                </router-link>
+              </li>
               <li class="nav-item">
                 <router-link to="/dashboard/add-class" class="nav-link">
                   <box-icon

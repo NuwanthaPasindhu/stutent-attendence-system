@@ -24,7 +24,11 @@
                 <h1>Download the excel file to be filled</h1>
               </div>
               <div class="card-body">
-                <button type="button" class="btn w-100">
+                <button
+                  type="button"
+                  class="btn w-100"
+                  @click.prevent="download"
+                >
                   <box-icon
                     name="cloud-download"
                     class="d-block mx-auto"
@@ -48,7 +52,7 @@
 
 <script>
 import DataUploader from "@/components/Dashboard/uploads/dataUploader.vue";
-
+import axios from "axios";
 export default {
   data() {
     return {
@@ -58,6 +62,9 @@ export default {
   methods: {
     toggle(value) {
       this.nav_active = value;
+    },
+    download() {
+      window.location.href = `${axios.defaults.baseURL}/storage/bulkData/module/teacherList.xlsx`;
     },
   },
   components: { DataUploader },

@@ -7,8 +7,12 @@
     @drop.prevent="drop($event)"
   >
     <div class="alert alert-danger" v-if="error">{{ error }}</div>
-    <div class="alert alert-success" role="alert">Success</div>
-    <div class="alert alert-warning" role="alert">inserting ....</div>
+    <div class="alert alert-success" role="alert" v-if="successMsg">
+      {{ successMsg }}
+    </div>
+    <div class="alert alert-warning" role="alert" v-if="processing">
+      processing ....
+    </div>
     <div class="card-body">
       <div class="drag">
         <form enctype="multipart/form-data">
@@ -21,7 +25,7 @@
             type="file"
             accept=".xlsx"
             id="profile_pic"
-            @change.prevent="ImageSelect($event)"
+            @change.prevent="FileSelector($event)"
           />
         </form>
       </div>
@@ -36,30 +40,24 @@
 
 <script>
 import ProgressBar from "@/components/Dashboard/progress/ProgressBar.vue";
-// import axios from "axios";
-import { mapGetters, mapActions } from "vuex";
+import axios from "axios";
 export default {
-  computed: mapGetters({
-    user: "auth/GET_USER",
-  }),
   data() {
     return {
       upload_progress: 0,
+      processing: false,
       nav_active: false,
       error: null,
       dragCount: 0,
       files: null,
       images: null,
-      image: "",
+      successMsg: "",
     };
   },
   components: {
     ProgressBar,
   },
   methods: {
-    ...mapActions({
-      attempt: "auth/attempt",
-    }),
     enter() {
       this.dragCount++;
     },
@@ -69,13 +67,13 @@ export default {
     drop(e) {
       e.stopPropagation();
       const files = e.dataTransfer.files;
-      this.addImage(files[0]);
+      this.addFile(files[0]);
     },
-    ImageSelect(e) {
+    FileSelector(e) {
       this.files = e.target.files[0];
-      this.addImage(e.target.files[0]);
+      this.addFile(e.target.files[0]);
     },
-    addImage(file) {
+    addFile(file) {
       console.log("====================================");
       console.log(file);
       console.log("====================================");
@@ -91,24 +89,30 @@ export default {
         this.error = null;
         this.files = file;
         const form = new FormData();
-        form.append("profilePic", file);
-        /*
-        axios.put("auth/profile-pic", form, {
+        form.append("teacherList", file);
+
+        axios
+          .post("/data/bulk/teacher-list-upload", form, {
             onUploadProgress: (progress) => {
+              this.error = "";
               this.upload_progress = Math.round(
                 (progress.loaded / progress.total) * 100
               );
+              this.processing =
+                (progress.loaded / progress.total) * 100 == 100 ? true : false;
             },
           })
           .then((res) => {
             if (res.data.status === 201) {
-              this.image = res.data.path;
-              this.attempt(localStorage.getItem("token"));
+              this.processing = false;
+              this.successMsg = res.data.message;
             }
           })
           .catch((err) => {
-            if (err) this.error = "error while uploading";
-          });*/
+            this.successMsg = "";
+            this.processing = false;
+            this.error = err.response.data.message;
+          });
       }
     },
   },

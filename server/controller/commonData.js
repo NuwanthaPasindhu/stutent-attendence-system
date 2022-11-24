@@ -3,7 +3,7 @@ const { USER_ROLE_ADMIN } = require("../enum");
 const User = require("../model/User");
 
 module.exports.getAllUsers = async (request, response) => {
-  const allUsers = await User.find();
+  const allUsers = await User.find().populate("profilePic");
   const Users = allUsers.filter(
     (user) =>
       user.role !== USER_ROLE_ADMIN &&

@@ -24,8 +24,7 @@ export default {
       const decode = {
         admissionId: decodeString,
       };
-      console.log(JSON.stringify(decode));
-      //   this.$emit("decode",decodeString)
+      this.$emit("decoded", JSON.stringify(decode));
     },
     async onInit(promise) {
       try {

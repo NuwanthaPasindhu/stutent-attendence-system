@@ -16,7 +16,7 @@
                 <img
                   :src="
                     user.profilePic
-                      ? `http://www.localhost:4000/api/v1/${user.profilePic.link}`
+                      ? `http://192.168.1.2:4000/api/v1/${user.profilePic.link}`
                       : null
                   "
                   class="profile_pic"

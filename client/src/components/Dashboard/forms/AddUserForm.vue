@@ -1,5 +1,5 @@
 <template>
-  <form class="py-2">
+  <form>
     <div class="alert alert-danger" v-if="state.errorMessage.length > 0">
       <ul>
         <li v-for="(message, key) in state.errorMessage" :key="key">
@@ -10,8 +10,8 @@
     <div class="alert alert-success" v-if="state.successMessage">
       {{ state.successMessage }}
     </div>
-    <div class="row my-3">
-      <div class="col-lg-6 col-md-12 mb-4">
+    <div class="row mb-3">
+      <div class="col-lg-6 col-md-12 my-2">
         <label for="exampleInputEmail1" class="form-label">Full Name</label>
         <span
           class="d-block text-danger font-weight-bold animate__animated animate__fadeIn"
@@ -20,53 +20,60 @@
         >
         <input type="text" class="form-control" v-model="state.fullName" />
       </div>
-
-      <div class="col-lg-6 col-md-12 mb-4">
-        <label for="exampleInputEmail1" class="form-label">Mobile Number</label>
+      <div class="col-lg-6 col-md-12 my-2">
+        <span class="label">Mobile Number</span>
         <span
           class="d-block text-danger font-weight-bold animate__animated animate__fadeIn"
           v-if="v$.mobileNumber.$error"
           >* &nbsp;{{ v$.mobileNumber.$errors[0].$message }}</span
         >
-        <input type="tel" class="form-control" v-model="state.mobileNumber" />
+        <input type="tel" v-model="state.mobileNumber" class="form-control" />
       </div>
-    </div>
-    <div class="row my-3">
-      <div class="col-lg-6 col-md-12 mb-4">
-        <label for="exampleInputEmail1" class="form-label">Address</label>
-        <span
-          class="d-block text-danger font-weight-bold animate__animated animate__fadeIn"
-          v-if="v$.address.$error"
-          >* &nbsp;{{ v$.address.$errors[0].$message }}</span
-        >
-        <input type="text" class="form-control" v-model="state.address" />
-      </div>
-      <div class="col-lg-6 col-md-12">
-        <label for="exampleInputEmail1" class="form-label">Email</label>
+      <div class="col-lg-12 col-md-12 my-2">
+        <span class="label">Email</span>
         <span
           class="d-block text-danger font-weight-bold animate__animated animate__fadeIn"
           v-if="v$.email.$error"
           >* &nbsp;{{ v$.email.$errors[0].$message }}</span
         >
-        <input type="email" class="form-control" v-model="state.email" />
+        <input type="email" v-model="state.email" class="form-control" />
+      </div>
+      <div class="col-lg-12 col-md-12 my-2">
+        <span class="label">address</span>
+        <span
+          class="d-block text-danger font-weight-bold animate__animated animate__fadeIn"
+          v-if="v$.address.$error"
+          >* &nbsp;{{ v$.address.$errors[0].$message }}</span
+        >
+        <input type="text" v-model="state.address" class="form-control" />
       </div>
     </div>
-
-    <div class="row">
-      <div class="col-lg-12">
-        <button type="submit" class="btn" @click.prevent="handleSubmit">
-          Update
-        </button>
-      </div>
+    <div class="row mb-3">
+      <button
+        type="submit"
+        class="btn"
+        @click.prevent="handleTeacher"
+        v-if="!sending && type === 'teacher'"
+      >
+        Add {{ type }}
+      </button>
+      <button
+        type="submit"
+        class="btn"
+        @click.prevent="handleAdmin"
+        v-if="!sending && type === 'admin'"
+      >
+        Add {{ type }}
+      </button>
+      <LoaderView v-if="sending" />
     </div>
   </form>
 </template>
 
 <script>
 import axios from "axios";
+import LoaderView from "@/components/loader/LoaderView.vue";
 import useVuelidate from "@vuelidate/core";
-import { reactive, computed } from "vue";
-import { mapGetters, mapActions, useStore } from "vuex";
 import {
   helpers,
   minLength,
@@ -75,21 +82,16 @@ import {
   required,
   numeric,
 } from "@vuelidate/validators";
+import { reactive, computed } from "vue";
 export default {
-  computed: mapGetters({
-    user: "auth/GET_USER",
-  }),
-
   setup() {
-    const store = useStore();
-
     const state = reactive({
-      fullName: store.getters["auth/GET_USER"].fullName,
-      mobileNumber: store.getters["auth/GET_USER"].mobileNumber,
-      address: store.getters["auth/GET_USER"].address,
-      email: store.getters["auth/GET_USER"].email,
       errorMessage: [],
       successMessage: "",
+      fullName: "",
+      mobileNumber: "",
+      address: "",
+      email: "",
     });
     const rules = computed(() => {
       return {
@@ -140,16 +142,18 @@ export default {
 
     return { state, v$ };
   },
+  props: ["type"],
+  data() {
+    return {
+      sending: false,
+    };
+  },
   methods: {
-    ...mapActions({
-      attempt: "auth/attempt",
-    }),
-
-    handleSubmit() {
+    handleTeacher() {
       this.v$.$validate();
       if (!this.v$.$error) {
         axios
-          .put("auth/profile-update/" + this.user._id, {
+          .post("/sections/create-teacher", {
             fullName: this.state.fullName,
             mobileNumber: this.state.mobileNumber,
             address: this.state.address,
@@ -157,7 +161,30 @@ export default {
           })
           .then((response) => {
             this.state.successMessage = response.data.message;
-            this.attempt(localStorage.getItem("token"));
+          })
+          .catch((e) => {
+            if (typeof e.response.data.message === "string") {
+              this.state.errorMessage.push({
+                message: e.response.data.message,
+              });
+            } else {
+              this.state.errorMessage = e.response.data.message;
+            }
+          });
+      }
+    },
+    handleAdmin() {
+      this.v$.$validate();
+      if (!this.v$.$error) {
+        axios
+          .post("/sections/create-admin", {
+            fullName: this.state.fullName,
+            mobileNumber: this.state.mobileNumber,
+            address: this.state.address,
+            email: this.state.email,
+          })
+          .then((response) => {
+            this.state.successMessage = response.data.message;
           })
           .catch((e) => {
             if (typeof e.response.data.message === "string") {
@@ -171,9 +198,9 @@ export default {
       }
     },
   },
+  components: { LoaderView },
 };
 </script>
-
 <style lang="scss" scoped>
 form {
   input {

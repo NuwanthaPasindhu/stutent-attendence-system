@@ -14,5 +14,18 @@ const teacherValidationSchema = Joi.object({
   userID: Joi.string().required().trim(),
 });
 
+const newUserValidationSchema = Joi.object({
+  email: Joi.string().required().email(),
+  fullName: Joi.string().trim().required().label("Full Name"),
+  mobileNumber: Joi.string()
+    .trim()
+    .max(11)
+    .min(10)
+    .required()
+    .label("Mobile Number"),
+  address: Joi.string().trim().required(),
+});
+
+module.exports.validatedNewUser = validator(newUserValidationSchema);
 module.exports.validatedSection = validator(sectionValidationSchema);
 module.exports.validatedTeacher = validator(teacherValidationSchema);

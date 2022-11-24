@@ -14,16 +14,6 @@
       <div class="info">
         <span v-if="user !== null">{{ user.fullName }}</span>
         <div class="user">
-          <!-- <img
-            :src="
-              user.profilePic
-                ? `http://www.localhost:4000/api/v1/${user.profilePic.link}`
-                : null
-            "
-            alt="Profile Picture"
-            srcset=""
-            v-if="user !== null"
-          /> -->
           <img
             :src="
               user.profilePic

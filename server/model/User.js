@@ -12,13 +12,13 @@ const userSchema = new mongoose.Schema(
     },
     fullName: {
       type: String,
-      required:true
+      required: true,
     },
     mobileNumber: {
       type: String,
       min: 10,
       max: 11,
-      required:true,
+      required: true,
       unique: true,
     },
     email: {
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     profileComplete: {
       type: Boolean,

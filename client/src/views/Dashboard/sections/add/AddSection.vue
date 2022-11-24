@@ -130,7 +130,11 @@
                                     : 'bg-danger'
                                 "
                               >
-                                {{ selectedUser.status }}</span
+                                {{
+                                  selectedUser.status
+                                    ? "Account Activated"
+                                    : "Account Blocked"
+                                }}</span
                               >
                             </td>
                           </tr>
@@ -145,7 +149,11 @@
                                     : 'bg-danger'
                                 "
                               >
-                                {{ selectedUser.profileComplete }}</span
+                                {{
+                                  selectedUser.profileComplete
+                                    ? "profile Completed"
+                                    : "Profile not Completed"
+                                }}</span
                               >
                             </td>
                           </tr>
@@ -240,7 +248,7 @@
                     <th>Class Year</th>
                     <th>Class Name</th>
                     <th>Class Details</th>
-                    <!-- <th>Profile Pic</th> -->
+                    <th>Profile Pic</th>
                     <th>Class Teacher</th>
                     <th>Class Teacher Address</th>
                     <th>Class Teacher Mobile Number</th>
@@ -255,8 +263,17 @@
                     <td>{{ section.year }}</td>
                     <td>{{ section.classId.name }}</td>
                     <td>{{ section.classId.details }}</td>
-                    <!-- <td><img :src="section.get_user.profile_pic" alt="Profile Picture"
-                                                class="profilePic"></td> -->
+                    <td>
+                      <img
+                        :src="
+                          section.userId.profilePic
+                            ? `http://192.168.1.2:4000/api/v1/${section.userId.profilePic.link}`
+                            : null
+                        "
+                        alt="Profile Picture"
+                        class="profilePic"
+                      />
+                    </td>
                     <td>{{ section.userId.fullName }}</td>
                     <td>{{ section.userId.address }}</td>
                     <td>{{ section.userId.mobileNumber }}</td>
@@ -268,7 +285,11 @@
                           section.userId.status ? ' bg-success' : 'bg-danger'
                         "
                       >
-                        {{ section.userId.status }}</span
+                        {{
+                          section.userId.status
+                            ? "Account Activated"
+                            : "Account Blocked"
+                        }}</span
                       >
                     </td>
                     <td>
@@ -280,7 +301,11 @@
                             : 'bg-danger'
                         "
                       >
-                        {{ section.userId.profileComplete }}</span
+                        {{
+                          section.userId.profileComplete
+                            ? "Account Completed"
+                            : "Account not Completed"
+                        }}</span
                       >
                     </td>
                   </tr>

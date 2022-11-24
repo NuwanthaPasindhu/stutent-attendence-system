@@ -1,10 +1,17 @@
-const { USER_ROLE_SECTION_HEAD } = require("../enum");
+const {
+  USER_ROLE_SECTION_HEAD,
+  USER_ROLE_ADMIN,
+  USER_ROLE_TEACHER,
+} = require("../enum");
 const Selection = require("../model/Section");
 const UserClasses = require("../model/UserClasses");
 const SectionClass = require("../model/Sectionclasses");
 const { randomPasswordGenerator, hashPassword } = require("../util/password");
 const User = require("../model/User");
-const { validatedSection } = require("../util/validation/accValidation");
+const {
+  validatedSection,
+  validatedNewUser,
+} = require("../util/validation/accValidation");
 const { default: mongoose } = require("mongoose");
 const Section = require("../model/Section");
 const { newAccNotification } = require("./emailController");
@@ -153,10 +160,168 @@ module.exports.getSelectedSections = async (request, response) => {
   const sectionClasses = await UserClasses.find({
     sectionId: params.id,
     year: params.year,
-  }).populate([{ path: "userId" }, { path: "sectionId" }, { path: "classId" }]);
+  }).populate([
+    { path: "userId", populate: { path: "profilePic" } },
+    { path: "sectionId" },
+    { path: "classId" },
+  ]);
   response.status(200).json({
     status: 200,
     sectionClasses,
+  });
+  return;
+};
+
+module.exports.createAdmin = async (request, response) => {
+  const payload = request.body;
+  const randomPassword = randomPasswordGenerator();
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedNewUser(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  //  FIND THE USER BY MOBILE NUMBER
+  const findUserByMobileNumber = await User.find({
+    mobileNumber: payload.mobileNumber,
+  });
+  if (findUserByMobileNumber.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Mobile Number already exist",
+    });
+    return;
+  }
+  //  FIND THE USER BY EMAIL
+  const findUserByEmail = await User.findOne({ email: payload.email });
+  if (findUserByEmail) {
+    response.status(400).json({
+      status: 400,
+      message: "Email already exist",
+    });
+    return;
+  }
+  try {
+    const newUser = new User({
+      email: payload.email,
+      mobileNumber: payload.mobileNumber,
+      address: payload.address,
+      fullName: payload.fullName,
+      password: hashPassword(randomPassword),
+      role: USER_ROLE_ADMIN,
+      status: true,
+    });
+    await newUser.save();
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+  }
+  // SEND MAIL
+  try {
+    newAccNotification(
+      payload.email,
+      payload.fullName,
+      randomPassword,
+      USER_ROLE_ADMIN
+    );
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+
+  response
+    .status(201)
+    .json({ status: 201, message: "new Admin User successfully created" });
+};
+module.exports.createTeacher = async (request, response) => {
+  const payload = request.body;
+
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedNewUser(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  //  FIND THE USER BY MOBILE NUMBER
+  const findUserByMobileNumber = await User.find({
+    mobileNumber: payload.mobileNumber,
+  });
+  if (findUserByMobileNumber.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Mobile Number already exist",
+    });
+    return;
+  }
+
+  //  FIND THE USER BY EMAIL
+  const findUserByEmail = await User.findOne({ email: payload.email });
+  if (findUserByEmail) {
+    response.status(400).json({
+      status: 400,
+      message: "Email already exist",
+    });
+    return;
+  }
+
+  try {
+    const newUser = new User({
+      email: payload.email,
+      mobileNumber: payload.mobileNumber,
+      address: payload.address,
+      fullName: payload.fullName,
+      password: hashPassword(randomPassword),
+      role: USER_ROLE_TEACHER,
+      status: true,
+    });
+    await newUser.save();
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+  }
+  // SEND MAIL
+  try {
+    newAccNotification(
+      payload.email,
+      payload.fullName,
+      randomPassword,
+      USER_ROLE_TEACHER
+    );
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+
+  response
+    .status(201)
+    .json({ status: 201, message: "new Admin User successfully created" });
+};
+
+module.exports.getAllAdminUsers = async (request, response) => {
+  const allUsers = await User.find({ role: USER_ROLE_ADMIN }).populate(
+    "profilePic"
+  );
+
+  response.status(200).json({
+    allUsers,
   });
   return;
 };
