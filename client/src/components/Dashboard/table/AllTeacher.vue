@@ -18,8 +18,6 @@
               <th>Email</th>
               <th>Phone</th>
               <th>address</th>
-              <th>Profile Status</th>
-              <th>Profile complete</th>
             </tr>
           </thead>
 
@@ -40,28 +38,6 @@
               <td>{{ user.email }}</td>
               <td>{{ user.mobileNumber }}</td>
               <td>{{ user.address }}</td>
-              <td>
-                <span
-                  class="badge"
-                  :class="user.status ? ' bg-success' : 'bg-danger'"
-                >
-                  {{
-                    user.status ? "Account Activated" : "Account Blocked"
-                  }}</span
-                >
-              </td>
-              <td>
-                <span
-                  class="badge"
-                  :class="user.profileComplete ? ' bg-success' : 'bg-danger'"
-                >
-                  {{
-                    user.profileComplete
-                      ? "Account Completed"
-                      : "Account not Completed"
-                  }}</span
-                >
-              </td>
             </tr>
           </tbody>
         </table>
