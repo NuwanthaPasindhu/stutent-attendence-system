@@ -42,6 +42,7 @@
 import ProgressBar from "@/components/Dashboard/progress/ProgressBar.vue";
 import axios from "axios";
 export default {
+  props: ["type"],
   data() {
     return {
       upload_progress: 0,
@@ -74,10 +75,6 @@ export default {
       this.addFile(e.target.files[0]);
     },
     addFile(file) {
-      console.log("====================================");
-      console.log(file);
-      console.log("====================================");
-
       if (
         !file.type.match(
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -90,29 +87,58 @@ export default {
         this.files = file;
         const form = new FormData();
         form.append("teacherList", file);
-
-        axios
-          .post("/data/bulk/teacher-list-upload", form, {
-            onUploadProgress: (progress) => {
-              this.error = "";
-              this.upload_progress = Math.round(
-                (progress.loaded / progress.total) * 100
-              );
-              this.processing =
-                (progress.loaded / progress.total) * 100 == 100 ? true : false;
-            },
-          })
-          .then((res) => {
-            if (res.data.status === 201) {
+        if (this.type == "student") {
+          axios
+            .post("/data/bulk/student-list-upload", form, {
+              onUploadProgress: (progress) => {
+                this.error = "";
+                this.upload_progress = Math.round(
+                  (progress.loaded / progress.total) * 100
+                );
+                this.processing =
+                  (progress.loaded / progress.total) * 100 == 100
+                    ? true
+                    : false;
+              },
+            })
+            .then((res) => {
+              if (res.data.status === 201) {
+                this.processing = false;
+                this.successMsg = res.data.message;
+              }
+            })
+            .catch((err) => {
+              this.successMsg = "";
               this.processing = false;
-              this.successMsg = res.data.message;
-            }
-          })
-          .catch((err) => {
-            this.successMsg = "";
-            this.processing = false;
-            this.error = err.response.data.message;
-          });
+              this.error = err.response.data.message;
+            });
+        }
+        if (this.type == "teacher") {
+          axios
+            .post("/data/bulk/teacher-list-upload", form, {
+              onUploadProgress: (progress) => {
+                this.error = "";
+                this.upload_progress = Math.round(
+                  (progress.loaded / progress.total) * 100
+                );
+                this.processing =
+                  (progress.loaded / progress.total) * 100 == 100
+                    ? true
+                    : false;
+              },
+            })
+            .then((res) => {
+              if (res.data.status === 201) {
+                this.processing = false;
+                this.successMsg = res.data.message;
+              }
+            })
+            .catch((err) => {
+              this.successMsg = "";
+              this.processing = false;
+              this.error = err.response.data.message;
+            });
+        }
       }
     },
   },

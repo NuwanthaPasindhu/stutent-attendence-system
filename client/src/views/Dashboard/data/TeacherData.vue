@@ -14,7 +14,7 @@
                 <h1>Upload Teachers</h1>
               </div>
               <div class="card-body">
-                <DataUploader />
+                <DataUploader type="teacher" />
               </div>
             </div>
           </div>

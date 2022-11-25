@@ -1,7 +1,13 @@
-const { teacherBulkDataUpload } = require("../controller/bulkDataController");
+const {
+  teacherBulkDataUpload,
+  studentBulkDataUpload,
+} = require("../controller/bulkDataController");
 const api = require("../middleware/api");
-const { teacherListUpload } = require("../middleware/fileUpload");
-const { adminRoleCheck } = require("../middleware/role");
+const {
+  teacherListUpload,
+  studentListUpload,
+} = require("../middleware/fileUpload");
+const { adminRoleCheck, teacherRoleCheck } = require("../middleware/role");
 const Router = require("express").Router();
 
 Router.post(
@@ -10,6 +16,13 @@ Router.post(
   api,
   adminRoleCheck,
   teacherBulkDataUpload
+);
+Router.post(
+  "/bulk/student-list-upload",
+  studentListUpload.single("teacherList"),
+  api,
+  teacherRoleCheck,
+  studentBulkDataUpload
 );
 
 module.exports = Router;

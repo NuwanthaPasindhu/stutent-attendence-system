@@ -15,6 +15,7 @@ import LogOut from "@/views/Dashboard/LogOut";
 import AddClasses from "@/views/Dashboard/Classses/add/AddClasses";
 
 import AttendanceMark from "@/views/Dashboard/attendance/AttendanceMark";
+import StudentAdd from "@/views/Dashboard/students/StudentAdd";
 
 import UserComplete from "@/views/errors/userComplete";
 import AccessDenied from "@/views/errors/AccessDenied";
@@ -77,6 +78,12 @@ const routes = [
     path: "/dashboard/attendance",
     name: "AttendanceMark",
     component: AttendanceMark,
+    beforeEnter: teacher,
+  },
+  {
+    path: "/dashboard/add-students",
+    name: "StudentAdd",
+    component: StudentAdd,
     beforeEnter: teacher,
   },
 

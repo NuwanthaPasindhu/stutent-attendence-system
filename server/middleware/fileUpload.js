@@ -23,6 +23,24 @@ module.exports.teacherListUpload = multer({
     }
   },
 });
+module.exports.studentListUpload = multer({
+  storage: teacherListStorage,
+  limits: {
+    fieldSize: 1024 * 1024 * 10,
+  },
+  fileFilter: (req, file, cb, res) => {
+    if (
+      file.mimetype.match(
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      )
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only xlsx files are allowed").message);
+    }
+  },
+});
 
 module.exports.profileUpload = multer({
   storage: profilePicStorage,
