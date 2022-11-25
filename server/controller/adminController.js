@@ -214,6 +214,7 @@ module.exports.createAdmin = async (request, response) => {
       password: hashPassword(randomPassword),
       role: USER_ROLE_ADMIN,
       status: true,
+      profileComplete: true,
     });
 
     await newUser.save();
@@ -287,6 +288,7 @@ module.exports.createTeacher = async (request, response) => {
       fullName: payload.fullName,
       password: hashPassword(randomPassword),
       role: USER_ROLE_TEACHER,
+      profileComplete: true,
     });
     await newUser.save();
   } catch (error) {

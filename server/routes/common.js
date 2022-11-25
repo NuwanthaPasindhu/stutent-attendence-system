@@ -1,6 +1,6 @@
 const Router = require("express").Router();
 const api = require("../middleware/api");
-const { adminRoleCheck, sectionHeadRoleCheck } = require("../middleware/role");
+const { sectionHeadRoleCheck } = require("../middleware/role");
 const { getAllUsers, getSpecificUsers } = require("../controller/commonData");
 
 Router.get("/users/all", api, sectionHeadRoleCheck, getAllUsers);
