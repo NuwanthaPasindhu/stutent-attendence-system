@@ -70,7 +70,7 @@
                         class="profile_pic"
                         :src="
                           selectedUser.profilePic
-                            ? `http://www.localhost:4000/api/v1/${selectedUser.profilePic.link}`
+                            ? `http://192.168.1.2:4000/api/v1/${selectedUser.profilePic.link}`
                             : 'https://images.pexels.com/photos/14270861/pexels-photo-14270861.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
                         "
                         alt=""
@@ -178,24 +178,17 @@
                         :key="key"
                       >
                         <td>{{ key + 1 }}</td>
-                        <td>
-                          {{
-                            sectionClass.name > 9
-                              ? `Class ${sectionClass.name}`
-                              : `Class 0${sectionClass.name}`
-                          }}
-                        </td>
-                        <td>{{ sectionClass.details }}</td>
-                        <td>
-                          <button
-                            class="btn btn-success"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal"
-                            @click.prevent="getData(sectionClass._id)"
-                          >
-                            Details
-                          </button>
-                        </td>
+                        <td>{{ sectionClass.classId.details }}</td>
+                        <td>{{ sectionClass.userId.fullName }}</td>
+                        <td>{{ sectionClass.userId.mobileNumber }}</td>
+                        <button
+                          class="btn"
+                          @click="get_details(sectionClass.userId._id)"
+                          data-bs-toggle="modal"
+                          data-bs-target="#exampleModal"
+                        >
+                          Details
+                        </button>
                       </tr>
                     </tbody>
                   </table>
@@ -206,60 +199,107 @@
         </div>
       </div>
       <dashboard-footer />
-    </div>
-    <!-- Dashboard  Contents -->
-    <!-- Button trigger modal -->
-    <!-- Modal -->
-    <div
-      class="modal fade"
-      id="exampleModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title heading" id="exampleModalLabel">
-              Section Details
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="table-responsive">
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Class Year</th>
-                    <th>Class Name</th>
-                    <th>Class Details</th>
-                    <th>Profile Pic</th>
-                    <th>Class Teacher</th>
-                    <th>Class Teacher Address</th>
-                    <th>Class Teacher Mobile Number</th>
-                    <th>Class Teacher Email</th>
-                    <th>Class Teacher Profile Status</th>
-                    <th>Class Teacher Profile complete</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                  </tr>
-                </tbody>
-              </table>
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title heading" id="exampleModalLabel">
+                Teacher Details
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Profile Pic</th>
+                      <th>Class Teacher</th>
+                      <th>Class Teacher Address</th>
+                      <th>Class Teacher Mobile Number</th>
+                      <th>Class Teacher Email</th>
+                      <th>Class Teacher Profile Status</th>
+                      <th>Class Teacher Profile complete</th>
+                    </tr>
+                  </thead>
+                  <tbody v-if="userProfile">
+                    <tr>
+                      <td>
+                        <img
+                          :src="
+                            userProfile.profilePic
+                              ? `http://192.168.1.2:4000/api/v1/${userProfile.profilePic.link}`
+                              : null
+                          "
+                          alt="Profile Picture"
+                          class="profilePic"
+                        />
+                      </td>
+                      <td>
+                        {{ userProfile.fullName }}
+                      </td>
+                      <td>
+                        {{ userProfile.address }}
+                      </td>
+                      <td>
+                        {{ userProfile.mobileNumber }}
+                      </td>
+                      <td>
+                        {{ userProfile.email }}
+                      </td>
+                      <td>
+                        <span
+                          class="badge"
+                          :class="
+                            userProfile.status ? ' bg-success' : 'bg-danger'
+                          "
+                        >
+                          {{
+                            userProfile.status
+                              ? "Account Activated"
+                              : "Account Blocked"
+                          }}</span
+                        >
+                      </td>
+                      <td>
+                        <span
+                          class="badge"
+                          :class="
+                            userProfile.profileComplete
+                              ? ' bg-success'
+                              : 'bg-danger'
+                          "
+                        >
+                          {{
+                            userProfile.profileComplete
+                              ? "Account Completed"
+                              : "Account not Completed"
+                          }}</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- Modal -->
     </div>
-    <!-- Modal -->
+    <!-- Dashboard  Contents -->
   </main>
 </template>
 
@@ -271,7 +311,7 @@ import LoaderView from "@/components/loader/LoaderView.vue";
 import SectionClassList from "@/components/Dashboard/sectionClasses/SectionClassList.vue";
 export default {
   created() {
-    this.sectionClasses();
+    this.sectionClassesTeacher();
   },
   setup() {
     const state = reactive({
@@ -284,6 +324,7 @@ export default {
   },
   data() {
     return {
+      selectedUser: null,
       errors: null,
       errorMessage: null,
       success: null,
@@ -291,20 +332,21 @@ export default {
       nav_active: false,
       TableConfig: {
         TableData: {},
-        TableHeaders: ["#", "Class", "Other", "more details"],
+        TableHeaders: ["#", "Class", "Name", "Mobile Number", "Details"],
         Heading: "Classes",
       },
+      userProfile: null,
     };
   },
   methods: {
     toggle(value) {
       this.nav_active = value;
     },
-    sectionClasses() {
+    sectionClassesTeacher() {
       axios
-        .get("classes/all")
+        .get("classes/teacher-list")
         .then((r) => {
-          this.TableConfig.TableData = r.data.classes;
+          this.TableConfig.TableData = r.data.sectionTeacherList;
         })
         .catch((e) => {
           console.log(e);
@@ -322,7 +364,6 @@ export default {
         .then((response) => {
           if (response.data.status == 201) {
             this.success = response.data.message;
-            this.sections();
             this.sending = false;
           }
         })
@@ -352,8 +393,15 @@ export default {
     selected_class(selectedClass) {
       this.state.selectedClass = selectedClass;
     },
-    getData(classId) {
-      console.log(classId);
+    get_details(userID) {
+      axios
+        .get("/details/users/" + userID)
+        .then((r) => {
+          this.userProfile = r.data.user;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
   },
   components: { LoaderView, UserList, SectionClassList },
@@ -419,7 +467,7 @@ main {
     .card-head {
       height: 200px;
       background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-        url("@/assets/Dashboard/Classes/banner.jpg");
+        url("@/assets/Dashboard/Sections/banner.jpg");
       background-size: cover;
       background-position: center center;
       display: flex;
@@ -477,10 +525,9 @@ main {
       }
     }
   }
-
-  .popup {
-    min-height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
+  .btn {
+    background: var(--dashboard-color);
+    color: #fff;
   }
 }
 </style>

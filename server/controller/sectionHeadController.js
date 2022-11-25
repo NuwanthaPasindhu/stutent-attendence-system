@@ -158,4 +158,24 @@ module.exports.allClasses = async (request, response) => {
   });
   return;
 };
-module.exports.allClassesWithTeacher = async (request, response) => {};
+module.exports.sectionTeacherList = async (request, response) => {
+  const authenticatedUser = request.user;
+  // FETCH THE AUTHENTICATED USER SECTION
+  const authUserSection = await UserClasses.findOne({
+    userId: authenticatedUser._id,
+    year: new Date().getFullYear(),
+  });
+  const sectionTeacherList = await UserClasses.find({
+    sectionId: authUserSection.sectionId,
+    year: new Date().getFullYear(),
+  }).populate([
+    { path: "userId", select: ["fullName", "mobileNumber"] },
+    { path: "classId" },
+  ]);
+
+  response.status(200).json({
+    status: 200,
+    sectionTeacherList,
+  });
+  return;
+};

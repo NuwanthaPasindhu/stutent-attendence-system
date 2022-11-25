@@ -100,8 +100,8 @@ export default {
 
   setup() {
     const state = reactive({
-      email: "hnpkdias@gmail.com",
-      password: "12345678",
+      email: "nuwanthapasindhu@gmail.com",
+      password: "",
       show: false,
     });
 
