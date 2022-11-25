@@ -14,7 +14,7 @@
                 <h1>Create Admin</h1>
               </div>
               <div class="card-body">
-                <AddUserForm type="admin" />
+                <AddUserForm type="admin" :refresh="getUsers()" />
               </div>
             </div>
           </div>
@@ -26,7 +26,7 @@
                 <h1>All Admin</h1>
               </div>
               <div class="card-body">
-                <AllTeacher />
+                <AllAdmin :admin="users" />
               </div>
             </div>
           </div>
@@ -39,20 +39,34 @@
 
 <script>
 import AddUserForm from "@/components/Dashboard/forms/AddUserForm.vue";
-import AllTeacher from "@/components/Dashboard/table/AllTeacher.vue";
-
+import AllAdmin from "@/components/Dashboard/table/AllAdmin.vue";
+import axios from "axios";
 export default {
+  created() {
+    this.getUsers();
+  },
   data() {
     return {
       nav_active: false,
+      users: [],
     };
   },
   methods: {
     toggle(value) {
       this.nav_active = value;
     },
+    getUsers() {
+      axios
+        .get("/sections/all-admin")
+        .then((r) => {
+          this.users = r.data.allUsers;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
   },
-  components: { AddUserForm, AllTeacher },
+  components: { AddUserForm, AllAdmin },
 };
 </script>
 

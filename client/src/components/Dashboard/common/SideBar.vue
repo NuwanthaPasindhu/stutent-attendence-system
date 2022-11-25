@@ -54,7 +54,7 @@
               <li class="nav-item">
                 <router-link to="/dashboard/add-teacher" class="nav-link">
                   <box-icon
-                    name="building"
+                    name="user-plus"
                     :animation="IconConfig.animation"
                     :color="IconConfig.color"
                     :size="IconConfig.size"
@@ -65,7 +65,7 @@
               <li class="nav-item">
                 <router-link to="/dashboard/add-admin" class="nav-link">
                   <box-icon
-                    name="building"
+                    name="user-check"
                     :animation="IconConfig.animation"
                     :color="IconConfig.color"
                     :size="IconConfig.size"

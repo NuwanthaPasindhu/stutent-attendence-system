@@ -215,12 +215,14 @@ module.exports.createAdmin = async (request, response) => {
       role: USER_ROLE_ADMIN,
       status: true,
     });
+
     await newUser.save();
   } catch (error) {
     response.status(400).json({
       status: 400,
       message: error.message,
     });
+    return;
   }
   // SEND MAIL
   try {
@@ -244,7 +246,7 @@ module.exports.createAdmin = async (request, response) => {
 };
 module.exports.createTeacher = async (request, response) => {
   const payload = request.body;
-
+  const randomPassword = randomPasswordGenerator();
   // VALIDATE THE REQUEST BODY
   const { error } = validatedNewUser(payload);
   if (error) {
@@ -285,23 +287,8 @@ module.exports.createTeacher = async (request, response) => {
       fullName: payload.fullName,
       password: hashPassword(randomPassword),
       role: USER_ROLE_TEACHER,
-      status: true,
     });
     await newUser.save();
-  } catch (error) {
-    response.status(400).json({
-      status: 400,
-      message: error.message,
-    });
-  }
-  // SEND MAIL
-  try {
-    newAccNotification(
-      payload.email,
-      payload.fullName,
-      randomPassword,
-      USER_ROLE_TEACHER
-    );
   } catch (error) {
     response.status(400).json({
       status: 400,
@@ -312,7 +299,7 @@ module.exports.createTeacher = async (request, response) => {
 
   response
     .status(201)
-    .json({ status: 201, message: "new Admin User successfully created" });
+    .json({ status: 201, message: "new Teacher successfully created" });
 };
 
 module.exports.getAllAdminUsers = async (request, response) => {

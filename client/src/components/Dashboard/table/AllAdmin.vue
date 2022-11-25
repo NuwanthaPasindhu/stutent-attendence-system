@@ -4,12 +4,9 @@
       class="card-header py-3 d-flex flex-row align-items-center justify-content-between"
     >
       <h6 class="m-0 heading"></h6>
-      <button class="btn btn-success" @click.prevent="getUsers()">
-        <box-icon name="refresh" color="white" animation="spin"></box-icon>
-      </button>
     </div>
     <div class="card-body">
-      <div class="table-responsive" style="max-height: 400px; overflow: auto">
+      <div class="table-responsive">
         <table class="table table-hover">
           <thead>
             <tr>
@@ -24,7 +21,7 @@
           </thead>
 
           <tbody>
-            <tr v-for="(user, key) in users" :key="key">
+            <tr v-for="(user, key) in admin" :key="key">
               <td>
                 <img
                   :src="
@@ -71,28 +68,15 @@
 </template>
 
 <script>
-import axios from "axios";
 export default {
-  data() {
-    return {
-      users: [],
-    };
-  },
-  created() {
-    this.getUsers();
-  },
-  methods: {
-    getUsers() {
-      axios
-        .get("/details/users/all")
-        .then((r) => {
-          this.users = r.data.allUsers;
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+  props: {
+    admin: {
+      type: Array,
+      required: true,
     },
   },
+
+  methods: {},
 };
 </script>
 

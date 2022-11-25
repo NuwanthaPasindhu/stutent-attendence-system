@@ -142,7 +142,7 @@ export default {
 
     return { state, v$ };
   },
-  props: ["type"],
+  props: ["type", "refresh"],
   data() {
     return {
       sending: false,
@@ -161,6 +161,7 @@ export default {
           })
           .then((response) => {
             this.state.successMessage = response.data.message;
+            this.refresh();
           })
           .catch((e) => {
             if (typeof e.response.data.message === "string") {
