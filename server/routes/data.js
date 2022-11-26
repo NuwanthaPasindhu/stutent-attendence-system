@@ -19,7 +19,7 @@ Router.post(
 );
 Router.post(
   "/bulk/student-list-upload",
-  studentListUpload.single("teacherList"),
+  studentListUpload.single("studentList"),
   api,
   teacherRoleCheck,
   studentBulkDataUpload

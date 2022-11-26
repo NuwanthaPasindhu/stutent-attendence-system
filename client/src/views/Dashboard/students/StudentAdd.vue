@@ -15,19 +15,18 @@
               </div>
               <div class="card-body">
                 <form>
-                  <div
-                    class="alert alert-danger my-3"
-                    v-for="(messages, key) in ermessage"
-                    :key="key"
-                  >
+                  <div class="alert alert-danger" v-if="errorMessage">
+                    {{ errorMessage }}
+                  </div>
+                  <div class="alert alert-success" v-if="success">
+                    {{ success }}
+                  </div>
+                  <div class="alert alert-danger" v-if="errors">
                     <ul>
-                      <li v-for="(msg, key) in messages" :key="key">
-                        {{ msg }}
+                      <li v-for="(error, key) in errors" :key="key">
+                        {{ error.message }}
                       </li>
                     </ul>
-                  </div>
-                  <div class="alert alert-success my-3" v-if="message">
-                    {{ message }}
                   </div>
                   <div class="row mb-3">
                     <div class="col-lg-6 col-md-12 my-2">
@@ -117,21 +116,23 @@
                       />
                     </div>
                   </div>
-                  <button
-                    type="submit"
-                    class="btn"
-                    @click.prevent="handleSubmit"
-                  >
-                    Add Student
-                  </button>
-                  <button
-                    type="button"
-                    class="btn mx-5"
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                  >
-                    Add All Student
-                  </button>
+                  <div class="row">
+                    <button
+                      type="submit"
+                      class="btn col-lg-4 col-md-10 mx-1 mt-1"
+                      @click.prevent="handleSubmit"
+                    >
+                      Add Student
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-warning col-lg-4 col-md-10 mx-1 mt-1"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                    >
+                      Add All Student
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
@@ -162,6 +163,59 @@
             </div>
           </div>
         </div>
+
+        <div class="row">
+          <div class="col-lg-12 col-md-12">
+            <div class="card shadow w-100">
+              <div class="card-head">
+                <h1>All Student</h1>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Admission Number</th>
+                        <th>Name</th>
+                        <th>Qr code</th>
+                        <th>profile</th>
+                      </tr>
+                    </thead>
+                    <tbody v-if="TableData.length > 0">
+                      <tr v-for="(student, key) in TableData" :key="key">
+                        <td>{{ student.stdId.admissionNumber }}</td>
+                        <td>{{ student.stdId.fullName }}</td>
+                        <td>
+                          <QrCodeVue
+                            :admissionId="student.stdId.admissionNumber"
+                            :studentName="student.stdId.fullName"
+                          />
+                        </td>
+                        <td>
+                          <button
+                            class="btn btn-success"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal2"
+                            @click.prevent="studentProfile(student.stdId._id)"
+                          >
+                            <box-icon name="show" color="white"></box-icon>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody v-else>
+                      <tr>
+                        <td colspan="5" class="text-center">
+                          No Records found
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <dashboard-footer />
       <!-- Modal -->
@@ -176,7 +230,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title heading" id="exampleModalLabel">
-                Section Details
+                Student details
               </h5>
               <button
                 type="button"
@@ -191,6 +245,76 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal -->
+      <!-- Modal -->
+      <div
+        class="modal fade"
+        id="exampleModal2"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title heading" id="exampleModalLabel">
+                Student Profile
+              </h5>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div class="modal-body" v-if="studentProfileData">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <tbody>
+                    <tr>
+                      <th>QR Code</th>
+                      <td>
+                        <QrCodeVue
+                          v-if="studentProfileData"
+                          :admissionId="studentProfileData.admissionNumber"
+                          :studentName="studentProfileData.fullName"
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Admission Number</th>
+                      <td>{{ studentProfileData.admissionNumber }}</td>
+                    </tr>
+                    <tr>
+                      <th>Student Name</th>
+                      <td>{{ studentProfileData.fullName }}</td>
+                    </tr>
+                    <tr>
+                      <th>Address</th>
+                      <td>{{ studentProfileData.address }}</td>
+                    </tr>
+                    <tr>
+                      <th>MotherName</th>
+                      <td>{{ studentProfileData.motherName }}</td>
+                    </tr>
+                    <tr>
+                      <th>Father Name</th>
+                      <td>{{ studentProfileData.fatherName }}</td>
+                    </tr>
+                    <tr>
+                      <th>Parent's mobile Number</th>
+                      <td>{{ studentProfileData.mobileNumber }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal -->
     </div>
     <!-- Dashboard  Contents -->
   </main>
@@ -208,9 +332,13 @@ import {
   numeric,
 } from "@vuelidate/validators";
 import DataUploader from "@/components/Dashboard/uploads/dataUploader.vue";
+import QrCodeVue from "@/components/Dashboard/qr/QrCode.vue";
 export default {
-  created() {},
+  created() {
+    this.studentData();
+  },
   setup() {
+    // const store = useStore();
     const state = reactive({
       admission_number: "",
       full_name: "",
@@ -274,21 +402,13 @@ export default {
   },
   data() {
     return {
-      ermessage: "",
+      errors: null,
+      errorMessage: null,
+      success: null,
       message: false,
       nav_active: false,
-      TableConfig: {
-        TableData: {},
-        TableHeaders: [
-          "admission number",
-          "student name",
-          "mobile number",
-          "address",
-          "mother's name",
-          "father's name",
-        ],
-        Heading: "Students",
-      },
+      TableData: [],
+      studentProfileData: null,
     };
   },
   methods: {
@@ -298,14 +418,53 @@ export default {
     handleSubmit() {
       this.v$.$validate();
       if (!this.v$.$error) {
-        alert("Hello");
+        this.errorMessage = null;
+        this.errors = null;
+        axios
+          .post("/students/add", {
+            fullName: this.state.full_name,
+            motherName: this.state.mother_name,
+            fatherName: this.state.father_name,
+            mobileNumber: this.state.mobile_number,
+            admissionNumber: this.state.admission_number,
+            address: this.state.address,
+          })
+          .then((response) => {
+            this.success = response.data.message;
+            this.studentData();
+          })
+          .catch((e) => {
+            if (typeof e.response.data.message == "string") {
+              this.errorMessage = e.response.data.message;
+            } else {
+              this.errors = e.response.data.message;
+            }
+            this.success = null;
+            this.sending = false;
+          });
       }
     },
     download() {
       window.location.href = `${axios.defaults.baseURL}/storage/bulkData/module/studentList.xlsx`;
     },
+    studentData() {
+      axios
+        .get("/students/")
+        .then((res) => {
+          this.TableData = res.data.students;
+        })
+        .catch((err) => console.log(err));
+    },
+    studentProfile(stdID) {
+      axios
+        .get("/students/details/" + stdID)
+        .then((res) => {
+          this.studentProfileData = res.data.profile;
+        })
+        .catch((err) => console.log(err));
+    },
   },
-  components: { DataUploader },
+  components: { DataUploader, QrCodeVue },
 };
 </script>
 
@@ -376,6 +535,10 @@ main {
           color: #fff;
           border-radius: 5px;
           font-weight: 800;
+          &.btn-warning {
+            background: var(--dashboard-main);
+            color: #000;
+          }
         }
       }
     }

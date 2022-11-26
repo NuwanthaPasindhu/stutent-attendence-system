@@ -11,6 +11,7 @@ const {
 const { profileUpload } = require("../middleware/fileUpload");
 
 Router.post("/login", login);
+Router.post("/forget-password");
 
 Router.get("/me", api, authenticatedUser);
 Router.put(

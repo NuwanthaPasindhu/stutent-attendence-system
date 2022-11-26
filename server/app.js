@@ -6,6 +6,7 @@ const adminRoutes = require("./routes/admin");
 const sectionRoutes = require("./routes/sectionHead");
 const commonRoutes = require("./routes/common");
 const dataRoutes = require("./routes/data");
+const teacherRoutes = require("./routes/teacher");
 
 // DB CONNECTION
 const dbConnection = require("./config/db.config");
@@ -30,6 +31,7 @@ app.use("/api/v1/sections/", adminRoutes);
 app.use("/api/v1/classes/", sectionRoutes);
 app.use("/api/v1/details/", commonRoutes);
 app.use("/api/v1/data/", dataRoutes);
+app.use("/api/v1/students/", teacherRoutes);
 
 // ASSIGN THE PORT
 const PORT = process.env.PORT || 4000;
