@@ -30,14 +30,31 @@
 
             <template v-if="user.role == 'ADMIN'">
               <li class="nav-item">
-                <router-link to="/dashboard/add-bulk-data" class="nav-link">
+                <router-link
+                  to="/dashboard/add-bulk-data/teacher"
+                  class="nav-link"
+                >
                   <box-icon
                     name="data"
                     :animation="IconConfig.animation"
                     :color="IconConfig.color"
                     :size="IconConfig.size"
                   ></box-icon>
-                  <span>Add Bulk Data</span>
+                  <span>Bulk Teacher Data</span>
+                </router-link>
+              </li>
+              <li class="nav-item">
+                <router-link
+                  to="/dashboard/add-bulk-data/student"
+                  class="nav-link"
+                >
+                  <box-icon
+                    name="data"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+                  <span>Bulk Student Data</span>
                 </router-link>
               </li>
               <li class="nav-item">
@@ -88,6 +105,17 @@
               </li>
             </template>
             <template v-if="user.role == 'TEACHER'">
+              <li class="nav-item">
+                <router-link to="/dashboard/assign-students" class="nav-link">
+                  <box-icon
+                    name="duplicate"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+                  <span>Assign Students</span>
+                </router-link>
+              </li>
               <li class="nav-item">
                 <router-link to="/dashboard/add-students" class="nav-link">
                   <box-icon

@@ -16,4 +16,9 @@ const newStudentValidationSchema = Joi.object({
   address: Joi.string().trim().required(),
   admissionNumber: Joi.number().required().label("Admission Number"),
 });
+
+const assignValidationSchema = Joi.object({
+  admissionID: Joi.number().required().label("Admission Number"),
+});
 module.exports.validatedStudent = validator(newStudentValidationSchema);
+module.exports.validatedStudentAssign = validator(assignValidationSchema);

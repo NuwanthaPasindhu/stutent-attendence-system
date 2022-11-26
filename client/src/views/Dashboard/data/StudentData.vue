@@ -11,10 +11,10 @@
           <div class="col-lg-8 col-md-12 mb-4">
             <div class="card shadow-sm">
               <div class="card-head">
-                <h1>Upload Teachers</h1>
+                <h1>Upload Students</h1>
               </div>
               <div class="card-body">
-                <DataUploader type="teacher" />
+                <DataUploader type="student" />
               </div>
             </div>
           </div>
@@ -27,7 +27,7 @@
                 <button
                   type="button"
                   class="btn w-100"
-                  @click.prevent="downloadTeacher"
+                  @click.prevent="downloadStudent"
                 >
                   <box-icon
                     name="cloud-download"
@@ -62,9 +62,6 @@ export default {
   methods: {
     toggle(value) {
       this.nav_active = value;
-    },
-    downloadTeacher() {
-      window.location.href = `${axios.defaults.baseURL}/storage/bulkData/module/teacherList.xlsx`;
     },
     downloadStudent() {
       window.location.href = `${axios.defaults.baseURL}/storage/bulkData/module/studentList.xlsx`;

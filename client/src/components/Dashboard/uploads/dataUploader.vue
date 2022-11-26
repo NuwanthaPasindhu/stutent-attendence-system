@@ -88,6 +88,7 @@ export default {
         const form = new FormData();
         if (this.type == "student") {
           form.append("studentList", file);
+
           axios
             .post("/data/bulk/student-list-upload", form, {
               onUploadProgress: (progress) => {
@@ -113,8 +114,10 @@ export default {
               this.error = err.response.data.message;
             });
         }
+
         if (this.type == "teacher") {
           form.append("teacherList", file);
+
           axios
             .post("/data/bulk/teacher-list-upload", form, {
               onUploadProgress: (progress) => {

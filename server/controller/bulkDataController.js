@@ -61,20 +61,6 @@ module.exports.studentBulkDataUpload = async (request, response) => {
 
   fs.unlinkSync(file.path);
 
-  newStudents.map(async (student) => {
-    try {
-      const newStudentAssign = new StudentClasses({
-        stdId: student._id,
-        sectionId: authUserSection.sectionId,
-        classId: authUserSection.classId,
-      });
-      await newStudentAssign.save();
-    } catch (error) {
-      response.status(400).json({ status: 400, message: error.message });
-      return;
-    }
-  });
-
   response.status(201).json({ status: 201, message: "Created successfully" });
   return;
 };

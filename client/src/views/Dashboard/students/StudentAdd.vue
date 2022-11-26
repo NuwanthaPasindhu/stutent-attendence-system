@@ -8,7 +8,7 @@
       <!-- Nav Bar End  -->
       <div class="container">
         <div class="row my-5">
-          <div class="col-lg-8 col-md-12">
+          <div class="col-lg-12 col-md-12">
             <div class="card shadow w-100">
               <div class="card-head">
                 <h1>Add Student</h1>
@@ -124,41 +124,8 @@
                     >
                       Add Student
                     </button>
-                    <button
-                      type="button"
-                      class="btn btn-warning col-lg-4 col-md-10 mx-1 mt-1"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exampleModal"
-                    >
-                      Add All Student
-                    </button>
                   </div>
                 </form>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4 col-md-12">
-            <div class="card shadow w-100">
-              <div class="card-head">
-                <h1>Download the excel file to be filled</h1>
-              </div>
-              <div class="card-body">
-                <button
-                  type="button"
-                  class="btn w-100"
-                  @click.prevent="download"
-                >
-                  <box-icon
-                    name="cloud-download"
-                    class="d-block mx-auto"
-                    size="large"
-                    type="solid"
-                    animation="fade-down"
-                  ></box-icon>
-                  <span class="bg-success p-2 rounded text-light"
-                    >Click here to download</span
-                  >
-                </button>
               </div>
             </div>
           </div>
@@ -218,35 +185,7 @@
         </div>
       </div>
       <dashboard-footer />
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="exampleModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-xl">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title heading" id="exampleModalLabel">
-                Student details
-              </h5>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <DataUploader type="student" />
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Modal -->
       <!-- Modal -->
       <div
         class="modal fade"
@@ -331,7 +270,6 @@ import {
   required,
   numeric,
 } from "@vuelidate/validators";
-import DataUploader from "@/components/Dashboard/uploads/dataUploader.vue";
 import QrCodeVue from "@/components/Dashboard/qr/QrCode.vue";
 export default {
   created() {
@@ -444,9 +382,6 @@ export default {
           });
       }
     },
-    download() {
-      window.location.href = `${axios.defaults.baseURL}/storage/bulkData/module/studentList.xlsx`;
-    },
     studentData() {
       axios
         .get("/students/")
@@ -464,7 +399,7 @@ export default {
         .catch((err) => console.log(err));
     },
   },
-  components: { DataUploader, QrCodeVue },
+  components: { QrCodeVue },
 };
 </script>
 

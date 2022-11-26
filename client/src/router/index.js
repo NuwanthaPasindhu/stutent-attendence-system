@@ -10,12 +10,14 @@ import AddSection from "@/views/Dashboard/sections/add/AddSection";
 import AddTeacher from "@/views/Dashboard/sections/add/addTeacher";
 import addAdmin from "@/views/Dashboard/sections/add/addAdmin";
 import TeacherData from "@/views/Dashboard/data/TeacherData";
+import StudentData from "@/views/Dashboard/data/StudentData";
 import LogOut from "@/views/Dashboard/LogOut";
 
 import AddClasses from "@/views/Dashboard/Classses/add/AddClasses";
 
 import AttendanceMark from "@/views/Dashboard/attendance/AttendanceMark";
 import StudentAdd from "@/views/Dashboard/students/StudentAdd";
+import AssignStudent from "@/views/Dashboard/students/AssignStudent";
 
 import UserComplete from "@/views/errors/userComplete";
 import AccessDenied from "@/views/errors/AccessDenied";
@@ -48,9 +50,15 @@ const routes = [
     beforeEnter: admin,
   },
   {
-    path: "/dashboard/add-bulk-data",
+    path: "/dashboard/add-bulk-data/teacher",
     name: "TeacherData",
     component: TeacherData,
+    beforeEnter: admin,
+  },
+  {
+    path: "/dashboard/add-bulk-data/student",
+    name: "StudentData",
+    component: StudentData,
     beforeEnter: admin,
   },
   {
@@ -84,6 +92,12 @@ const routes = [
     path: "/dashboard/add-students",
     name: "StudentAdd",
     component: StudentAdd,
+    beforeEnter: teacher,
+  },
+  {
+    path: "/dashboard/assign-students",
+    name: "AssignStudent",
+    component: AssignStudent,
     beforeEnter: teacher,
   },
 
