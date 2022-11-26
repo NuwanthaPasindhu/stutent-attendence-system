@@ -5,6 +5,7 @@ const {
   validatedStudent,
   validatedStudentAssign,
 } = require("../util/validation/studentValidation");
+const StdAttendence = require("../model/StdAttendence");
 
 module.exports.students = async (request, response) => {
   const authenticatedUser = request.user;
@@ -31,9 +32,9 @@ module.exports.studentProfile = async (request, response) => {
   response.status(200).json({ status: 200, profile: studentProfile });
   return;
 };
-
 module.exports.admissionNumberStudentProfile = async (request, response) => {
   const params = request.params;
+  // FETCH STUDENTS USING ADMISSION NUMBER
   const studentProfile = await Students.findOne({
     admissionNumber: params.admissionID,
   });
@@ -122,7 +123,6 @@ module.exports.assignStudent = async (request, response) => {
     return;
   }
 };
-
 module.exports.addStudent = async (request, response) => {
   const payload = request.body;
   const authenticatedUser = request.user;
@@ -191,5 +191,85 @@ module.exports.addStudent = async (request, response) => {
   }
 
   response.status(200).json({ status: 200, message: "New Student Created" });
+  return;
+};
+module.exports.attendance = async (request, response) => {
+  const payload = request.body;
+
+  const { error } = validatedStudentAssign(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details[0].message,
+    });
+    return;
+  }
+  // FETCH STUDENTS USING ADMISSION NUMBER
+  const studentProfile = await Students.findOne({
+    admissionNumber: payload.admissionID,
+  });
+  if (!studentProfile) {
+    response.status(200).json({ status: 200, profile: "Profile Not Found" });
+    return;
+  }
+
+  const studentClass = await StudentClasses.findOne({
+    stdId: studentProfile._id,
+  });
+
+  const Today = new Date();
+  //  CONST FIND PREVIOUS ATTENDANCE
+  const previousAttendance = await StdAttendence.findOne({
+    stdId: studentProfile._id,
+    attendance: true,
+    date: `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDay()}`,
+  });
+
+  if (!previousAttendance) {
+    try {
+      const attendance = await new StdAttendence({
+        attendance: true,
+        stdId: studentProfile._id,
+        sectionId: studentClass.sectionId,
+        classId: studentClass.classId,
+      });
+      attendance.save();
+
+      response.status(200).json({
+        status: 200,
+        message: "Attendance Marked",
+      });
+    } catch (error) {
+      response.status(400).json({
+        status: 400,
+        message: error.message,
+      });
+    }
+  } else {
+    response.status(200).json({
+      status: 200,
+      message: "attendance all ready marked",
+    });
+  }
+};
+
+module.exports.todayAttendance = async (request, response) => {
+  const payload = request.body;
+  const authenticatedUser = request.user;
+  const today = new Date();
+  // FETCH THE AUTHENTICATED USER SECTION
+  const authUserSection = await UserClasses.findOne({
+    userId: authenticatedUser._id,
+    year: new Date().getFullYear(),
+  });
+  const todayAttendance = await StdAttendence.find({
+    sectionId: authUserSection.sectionId,
+    classId: authUserSection.classId,
+    date: `${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`,
+  }).populate("stdId");
+  response.status(200).json({
+    status: 200,
+    todayAttendance,
+  });
   return;
 };

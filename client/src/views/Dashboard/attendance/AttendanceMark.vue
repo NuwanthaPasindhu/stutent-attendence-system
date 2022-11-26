@@ -16,6 +16,37 @@
               <QrCodeReader @decoded="decoded" />
             </div>
           </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="card shadow w-100">
+              <div class="card-head">
+                <h1>Today Attendance</h1>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <tbody v-if="attendance_history.length > 0">
+                      <tr
+                        v-for="(history, key) in attendance_history"
+                        :key="key"
+                      >
+                        <td>{{ history.stdId.fullName }}</td>
+                        <td>
+                          <span class="badge bg-success">
+                            {{ history.attendance ? "Marked" : "AB" }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody v-else>
+                      <tr>
+                        <td colspan="2">No Data Found</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -24,8 +55,11 @@
 
 <script>
 import QrCodeReader from "@/components/Dashboard/attendance/QrCodeReader";
-
+import axios from "axios";
 export default {
+  created() {
+    this.getAttendance();
+  },
   components: { QrCodeReader },
   data() {
     return {
@@ -40,7 +74,24 @@ export default {
       this.nav_active = value;
     },
     decoded(value) {
-      console.log(value);
+      const decoded = JSON.parse(value);
+
+      axios
+        .post("students/attendance", { admissionID: decoded.admissionId * 1 })
+        .then((response) => {
+          if (response.data.status == 200) {
+            this.getAttendance();
+          }
+        })
+        .catch((error) => console.log(error));
+    },
+    getAttendance() {
+      axios
+        .get("students/today-attendance")
+        .then((response) => {
+          this.attendance_history = response.data.todayAttendance;
+        })
+        .catch((error) => console.log(error));
     },
   },
 };

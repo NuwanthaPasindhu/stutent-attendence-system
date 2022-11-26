@@ -1,4 +1,9 @@
 const { default: mongoose } = require("mongoose");
+
+const attendanceDate = () => {
+  const Today = new Date();
+  return `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDay()}`;
+};
 const stdAttendanceSchema = new mongoose.Schema(
   {
     stdId: {
@@ -6,10 +11,20 @@ const stdAttendanceSchema = new mongoose.Schema(
       required: true,
       ref: "Student",
     },
-    date: {
-      type: Date,
+    sectionId: {
+      type: mongoose.SchemaTypes.ObjectId,
       required: true,
-      default: new Date().getFullYear(),
+      ref: "Section",
+    },
+    classId: {
+      type: mongoose.SchemaTypes.ObjectId,
+      required: true,
+      ref: "SectionClass",
+    },
+    date: {
+      type: String,
+      required: true,
+      default: attendanceDate,
     },
     attendance: {
       type: Boolean,

@@ -3,7 +3,7 @@
     <div class="alert alert-danger" role="alert" v-if="errorMessage">
       {{ errorMessage }}
     </div>
-    <QrcodeStream @onInit="onInit" @decode="onDecode" />
+    <QrcodeStream @decode="onDecode" />
   </div>
 </template>
 
@@ -25,26 +25,6 @@ export default {
         admissionId: decodeString,
       };
       this.$emit("decoded", JSON.stringify(decode));
-    },
-    async onInit(promise) {
-      try {
-        await promise;
-      } catch (error) {
-        if (error.name === "NotAllowedError") {
-          this.errorMessage = "user denied camera access permisson";
-        } else if (error.name === "NotFoundError") {
-          this.errorMessage = "no suitable camera device installed";
-        } else if (error.name === "NotSupportedError") {
-          this.errorMessage = "page is not served over HTTPS (or localhost)";
-        } else if (error.name === "NotReadableError") {
-          this.errorMessage = "maybe camera is already in use";
-        } else if (error.name === "OverconstrainedError") {
-          this.errorMessage =
-            "did you requested the front camera although there is none?";
-        } else if (error.name === "StreamApiNotSupportedError") {
-          this.errorMessage = "browser seems to be lacking features";
-        }
-      }
     },
   },
 };
