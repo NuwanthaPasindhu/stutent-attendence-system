@@ -267,7 +267,7 @@
                       <img
                         :src="
                           section.userId.profilePic
-                            ? `http://192.168.1.2:4000/api/v1/${section.userId.profilePic.link}`
+                            ? `http://localhost:4000/api/v1/${section.userId.profilePic.link}`
                             : null
                         "
                         alt="Profile Picture"

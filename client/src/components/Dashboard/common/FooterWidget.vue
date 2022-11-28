@@ -6,7 +6,7 @@
         <span>App </span>
         &nbsp;
         <br />
-        <small>Powered By ACICTS </small>
+        <small>Design and Developed By Nuwantha pasindu </small>
       </div>
     </div>
   </footer>

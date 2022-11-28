@@ -70,7 +70,7 @@
                         class="profile_pic"
                         :src="
                           selectedUser.profilePic
-                            ? `http://192.168.1.2:4000/api/v1/${selectedUser.profilePic.link}`
+                            ? `http://localhost:4000/api/v1/${selectedUser.profilePic.link}`
                             : 'https://images.pexels.com/photos/14270861/pexels-photo-14270861.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
                         "
                         alt=""
@@ -240,7 +240,7 @@
                         <img
                           :src="
                             userProfile.profilePic
-                              ? `http://192.168.1.2:4000/api/v1/${userProfile.profilePic.link}`
+                              ? `http://localhost:4000/api/v1/${userProfile.profilePic.link}`
                               : null
                           "
                           alt="Profile Picture"

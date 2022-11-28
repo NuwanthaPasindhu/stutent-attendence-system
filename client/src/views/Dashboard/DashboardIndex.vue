@@ -8,7 +8,7 @@
       <!-- Nav Bar End  -->
       <div class="container h-100vh">
         <div class="row my-5">
-          <div class="col-lg-12 col-md-12">
+          <div class="col-lg-12 col-md-12" v-if="user.role == 'TEACHER'">
             <div class="card shadow w-100">
               <div class="card-header card-head py-3">
                 <h1 class="heading">Today Attendance</h1>
