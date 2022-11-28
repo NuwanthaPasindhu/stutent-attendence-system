@@ -18,6 +18,7 @@ import AddClasses from "@/views/Dashboard/Classses/add/AddClasses";
 import AttendanceMark from "@/views/Dashboard/attendance/AttendanceMark";
 import StudentAdd from "@/views/Dashboard/students/StudentAdd";
 import AssignStudent from "@/views/Dashboard/students/AssignStudent";
+import AttendenceHistory from "@/views/Dashboard/attendance/AttendenceHistory";
 
 import UserComplete from "@/views/errors/userComplete";
 import AccessDenied from "@/views/errors/AccessDenied";
@@ -98,6 +99,12 @@ const routes = [
     path: "/dashboard/assign-students",
     name: "AssignStudent",
     component: AssignStudent,
+    beforeEnter: teacher,
+  },
+  {
+    path: "/dashboard/attendance-history",
+    name: "AttendenceHistory",
+    component: AttendenceHistory,
     beforeEnter: teacher,
   },
 

@@ -2,7 +2,7 @@ const { default: mongoose } = require("mongoose");
 
 const attendanceDate = () => {
   const Today = new Date();
-  return `${Today.getFullYear()}-${Today.getMonth()}-${Today.getDay()}`;
+  return `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()}`;
 };
 const stdAttendanceSchema = new mongoose.Schema(
   {

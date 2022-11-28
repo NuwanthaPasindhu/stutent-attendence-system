@@ -7,6 +7,7 @@ const sectionRoutes = require("./routes/sectionHead");
 const commonRoutes = require("./routes/common");
 const dataRoutes = require("./routes/data");
 const teacherRoutes = require("./routes/teacher");
+const summeryRoutes = require("./routes/summary");
 
 // DB CONNECTION
 const dbConnection = require("./config/db.config");
@@ -32,6 +33,7 @@ app.use("/api/v1/classes/", sectionRoutes);
 app.use("/api/v1/details/", commonRoutes);
 app.use("/api/v1/data/", dataRoutes);
 app.use("/api/v1/students/", teacherRoutes);
+app.use("/api/v1/report/", summeryRoutes);
 
 // ASSIGN THE PORT
 const PORT = process.env.PORT || 4000;

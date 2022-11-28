@@ -405,6 +405,7 @@ export default {
           }
         })
         .catch((e) => {
+          this.sections();
           if (typeof e.response.data.message == "string") {
             this.errorMessage = e.response.data.message;
           } else {
