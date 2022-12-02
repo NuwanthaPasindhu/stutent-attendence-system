@@ -365,6 +365,7 @@ export default {
           if (response.data.status == 201) {
             this.success = response.data.message;
             this.sending = false;
+            this.sectionClassesTeacher();
           }
         })
         .catch((e) => {

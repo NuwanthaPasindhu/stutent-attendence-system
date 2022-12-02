@@ -6,14 +6,22 @@
       <!-- Nav Bar Start  -->
       <NavBar @toggleNav="toggle" />
       <!-- Nav Bar End  -->
-      <div class="container h-100vh">
+      <div class="container">
         <div class="row my-5">
-          <div class="col-lg-12 col-md-12" v-if="user.role == 'TEACHER'">
-            <div class="card shadow w-100">
-              <div class="card-header card-head py-3">
+          <div class="col-lg-12 col-md-12">
+            <div
+              class="card w-100"
+              :class="user.role !== 'ADMIN' ? `shadow` : `border-0`"
+            >
+              <div
+                class="card-header card-head py-3"
+                v-if="user.role !== 'ADMIN'"
+              >
                 <h1 class="heading">Today Attendance</h1>
               </div>
-              <ClassAttendance />
+              <ClassAttendance v-if="user.role == 'TEACHER'" />
+              <SectionAttendance v-if="user.role == 'SECTION_HEAD'" />
+              <SchoolAttendance v-if="user.role == 'ADMIN'" />
             </div>
           </div>
         </div>
@@ -28,6 +36,9 @@
 import { mapGetters } from "vuex";
 import { reactive } from "vue";
 import ClassAttendance from "@/components/Dashboard/summary/ClassAttendance.vue";
+import SchoolAttendance from "@/components/Dashboard/summary/SchoolAttendance.vue";
+import SectionAttendance from "@/components/Dashboard/summary/SectionAttendance.vue";
+
 export default {
   setup() {
     const state = reactive({
@@ -51,7 +62,7 @@ export default {
       this.nav_active = value;
     },
   },
-  components: { ClassAttendance },
+  components: { ClassAttendance, SectionAttendance, SchoolAttendance },
 };
 </script>
 
@@ -66,6 +77,7 @@ main {
 
 .container {
   overflow-x: hidden;
+  height: auto;
 
   .card {
     border-radius: 20px;
@@ -86,6 +98,12 @@ main {
         color: #ffff;
         font-weight: 900;
         text-align: center;
+      }
+      h5 {
+        color: #ffff;
+        font-weight: 900;
+        text-align: center;
+        text-transform: uppercase;
       }
     }
 

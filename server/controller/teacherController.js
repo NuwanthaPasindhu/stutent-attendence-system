@@ -267,6 +267,7 @@ module.exports.todayAttendance = async (request, response) => {
     classId: authUserSection.classId,
     date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
   }).populate("stdId");
+
   response.status(200).json({
     status: 200,
     todayAttendance,

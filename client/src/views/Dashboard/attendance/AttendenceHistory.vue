@@ -11,7 +11,7 @@
           <div class="col-lg-12 col-md-12">
             <div class="card shadow w-100">
               <div class="card-head">
-                <h1 class="text-center">Student Attendance History</h1>
+                <h1 class="text-center">{{ historyDate }} Date Attendance</h1>
               </div>
               <div class="card-body">
                 <h3 class="text-center my-2">Please Select The Date</h3>
@@ -24,28 +24,7 @@
                     />
                   </div>
                   <div class="col-lg-6 col-md-12">
-                    <div class="table-responsive">
-                      <table class="table table-hover">
-                        <tbody v-if="attendance_history.length > 0">
-                          <tr
-                            v-for="(history, key) in attendance_history"
-                            :key="key"
-                          >
-                            <td>{{ history.stdId.fullName }}</td>
-                            <td>
-                              <span class="badge bg-success">
-                                {{ history.attendance ? "Marked" : "AB" }}
-                              </span>
-                            </td>
-                          </tr>
-                        </tbody>
-                        <tbody v-else>
-                          <tr>
-                            <td colspan="2">No Data Found</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
+                    <!-- <canvas id="canvas" class="d-block mx-auto"></canvas> -->
                   </div>
                 </div>
               </div>
@@ -56,7 +35,28 @@
           <div class="col-lg-12 col-md-12">
             <div class="card shadow w-100">
               <div class="card-body" style="max-height: 450px">
-                <canvas id="canvas" class="d-block mx-auto"></canvas>
+                <div class="table-responsive">
+                  <table class="table table-hover">
+                    <tbody v-if="attendance_history.length > 0">
+                      <tr
+                        v-for="(history, key) in attendance_history"
+                        :key="key"
+                      >
+                        <td>{{ history.stdId.fullName }}</td>
+                        <td>
+                          <span class="badge bg-success">
+                            {{ history.attendance ? "Marked" : "AB" }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tbody v-else>
+                      <tr>
+                        <td colspan="2">No Data Found</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import { Chart } from "chart.js/auto";
+// import { Chart } from "chart.js/auto";
 import axios from "axios";
 export default {
   data() {
@@ -76,12 +76,17 @@ export default {
       nav_active: false,
       attendance_history: [],
       errorMessage: "",
-      historyDate: "",
+      historyDate: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${
+        new Date().getDate() - 1
+      }`,
       abLength: 0,
       todayAttendance: 0,
     };
   },
-  created() {},
+  created() {
+    this.getAttendance();
+  },
+
   watch: {
     historyDate(newValue, oldValue) {
       if (newValue !== oldValue) {
@@ -89,11 +94,11 @@ export default {
       }
     },
 
-    todayAttendance(nwValue, oldValue) {
-      if (nwValue !== oldValue) {
-        this.chartGen();
-      }
-    },
+    // todayAttendance(nwValue, oldValue) {
+    //   if (nwValue !== oldValue) {
+    //     this.chartGen();
+    //   }
+    // },
   },
   methods: {
     toggle(value) {
@@ -106,22 +111,22 @@ export default {
         this.attendance_history = response.data.studentList;
       });
     },
-    chartGen() {
-      const ctx = document.querySelector("#canvas").getContext("2d");
-      new Chart(ctx, {
-        type: "doughnut",
-        data: {
-          labels: ["AB", "Present"],
-          datasets: [
-            {
-              data: [this.abLength, this.todayAttendance],
-              backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
-              hoverOffset: 4,
-            },
-          ],
-        },
-      });
-    },
+    // chartGen() {
+    //   const ctx = document.querySelector("#canvas").getContext("2d");
+    //   new Chart(ctx, {
+    //     type: "doughnut",
+    //     data: {
+    //       labels: ["AB", "Present"],
+    //       datasets: [
+    //         {
+    //           data: [this.abLength, this.todayAttendance],
+    //           backgroundColor: ["rgb(255, 99, 132)", "rgb(54, 162, 235)"],
+    //           hoverOffset: 4,
+    //         },
+    //       ],
+    //     },
+    //   });
+    // },
   },
 };
 </script>
