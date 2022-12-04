@@ -111,7 +111,7 @@ module.exports.sectionAttendance = async (request, response) => {
 
 module.exports.schoolAttendance = async (request, response) => {
   const today = new Date();
-
+  const attendance = [];
   const day = `${today.getFullYear()}-${
     today.getMonth() + 1
   }-${today.getDate()}`;
@@ -120,7 +120,16 @@ module.exports.schoolAttendance = async (request, response) => {
   const sections = await Section.find();
   const filteredSections = sections.filter((section) => section.name !== "*");
 
-  filteredSections.map(async (section) => {});
+  console.log(attendance);
+  filteredSections.map(async (section) => {
+    const schoolAttendance = await StdAttendence.find({
+      date: day,
+      sectionId: section._id,
+    });
+    attendance.push(schoolAttendance.length);
+    console.log(attendance);
+  });
+  console.log(attendance);
 
   response.status(200).json({
     status: 200,
