@@ -48,8 +48,9 @@ module.exports.admissionNumberStudentProfile = async (request, response) => {
 };
 module.exports.assignStudent = async (request, response) => {
   const payload = request.body;
-
+  const today = new Date();
   const authenticatedUser = request.user;
+  let newStudentClass;
   const { error } = validatedStudentAssign(payload);
   if (error) {
     response.status(400).json({
@@ -75,6 +76,7 @@ module.exports.assignStudent = async (request, response) => {
   const studentClass = await StudentClasses.findOne({
     stdId: studentProfile._id,
   });
+  //  SAME YEAR PREVIOUS ATTENDANCE
 
   if (!studentClass) {
     // ASSIGN STUDENT TO STUDENT CLASS
@@ -86,7 +88,7 @@ module.exports.assignStudent = async (request, response) => {
         year: authUserSection.year,
       });
 
-      await studentClass.save();
+      newStudentClass = await studentClass.save();
       response
         .status(200)
         .json({ status: 200, message: "student assigned successfully" });
@@ -100,7 +102,7 @@ module.exports.assignStudent = async (request, response) => {
     }
   } else {
     try {
-      await StudentClasses.findOneAndUpdate(
+      newStudentClass = await StudentClasses.findOneAndUpdate(
         {
           stdId: studentProfile._id,
         },
@@ -117,11 +119,37 @@ module.exports.assignStudent = async (request, response) => {
       });
       return;
     }
-    response
-      .status(200)
-      .json({ status: 200, message: "student assigned successfully" });
-    return;
   }
+  const previousAttendance = await StdAttendence.find({
+    stdId: studentProfile._id,
+    date: { $regex: today.getFullYear() },
+  });
+  if (previousAttendance.length > 0) {
+    try {
+      await StdAttendence.updateMany(
+        {
+          stdId: studentProfile._id,
+          date: { $regex: today.getFullYear() },
+        },
+        {
+          $set: {
+            classId: newStudentClass.classId,
+            sectionId: newStudentClass.sectionId,
+          },
+        }
+      );
+    } catch (error) {
+      response.status(400).json({
+        status: 400,
+        message: error.message,
+      });
+      return;
+    }
+  }
+  response
+    .status(200)
+    .json({ status: 200, message: "student assigned successfully" });
+  return;
 };
 module.exports.addStudent = async (request, response) => {
   const payload = request.body;
@@ -218,6 +246,14 @@ module.exports.attendance = async (request, response) => {
   });
 
   const Today = new Date();
+  // CHECK IF TODAY IS A WEEKEND OR NOT
+  if (Today.getDay() === 0 || Today.getDay() === 6) {
+    response.status(400).json({
+      status: 400,
+      message: "Attendance of students cannot be marked on weekends",
+    });
+    return;
+  }
   //  CONST FIND PREVIOUS ATTENDANCE
   const previousAttendance = await StdAttendence.findOne({
     stdId: studentProfile._id,

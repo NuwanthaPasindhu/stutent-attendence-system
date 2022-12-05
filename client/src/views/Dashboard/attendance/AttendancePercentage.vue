@@ -8,43 +8,42 @@
       <!-- Nav Bar End  -->
       <div class="container">
         <div class="row my-5">
-          <div class="col-lg-6 col-md-12">
+          <div class="col-lg-12 col-md-12">
             <div class="card shadow w-100">
               <div class="card-head">
-                <h1>Student Attendance</h1>
-              </div>
-
-              <div class="alert alert-danger" v-if="errorMessage">
-                {{ errorMessage }}
-              </div>
-
-              <QrCodeReader @decoded="decoded" />
-            </div>
-          </div>
-          <div class="col-lg-6 col-md-12">
-            <div class="card shadow w-100">
-              <div class="card-head">
-                <h1>Today Attendance</h1>
+                <h1>Student Attendance Percentage</h1>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table table-hover">
-                    <tbody v-if="attendance_history.length > 0">
-                      <tr
-                        v-for="(history, key) in attendance_history"
-                        :key="key"
-                      >
-                        <td>{{ history.stdId.fullName }}</td>
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>STUDENT NAME</th>
+                        <th>Total number of school days</th>
+                        <th>
+                          Total number of days the student has attended school
+                        </th>
+                        <th>Percentage</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(data, key) in attendance" :key="key">
+                        <td>{{ key + 1 }}</td>
+                        <td>{{ data.student }}</td>
+                        <td>{{ data.allAttendanceMarkedDates }}</td>
+                        <td>{{ data.attendance }}</td>
                         <td>
-                          <span class="badge bg-success">
-                            {{ history.attendance ? "Marked" : "AB" }}
+                          <span
+                            class="badge bg-success"
+                            v-if="data.percentage >= 80"
+                          >
+                            {{ data.percentage }} %
+                          </span>
+                          <span class="badge bg-danger" v-else>
+                            {{ data.percentage }} %
                           </span>
                         </td>
-                      </tr>
-                    </tbody>
-                    <tbody v-else>
-                      <tr>
-                        <td colspan="2">No Data Found</td>
                       </tr>
                     </tbody>
                   </table>
@@ -60,18 +59,15 @@
 </template>
 
 <script>
-import QrCodeReader from "@/components/Dashboard/attendance/QrCodeReader";
 import axios from "axios";
 export default {
   created() {
     this.getAttendance();
   },
-  components: { QrCodeReader },
   data() {
     return {
       nav_active: false,
-      attendance_history: [],
-      errorMessage: "",
+      attendance: [],
     };
   },
 
@@ -79,25 +75,10 @@ export default {
     toggle(value) {
       this.nav_active = value;
     },
-    decoded(value) {
-      const decoded = JSON.parse(value);
-
-      axios
-        .post("students/attendance", { admissionID: decoded.admissionId * 1 })
-        .then((response) => {
-          if (response.data.status == 200) {
-            this.getAttendance();
-          }
-        })
-        .catch((error) => (this.errorMessage = error.response.data.message));
-    },
     getAttendance() {
       axios
-        .get("students/today-attendance")
-        .then((response) => {
-          this.attendance_history = response.data.todayAttendance;
-        })
-        .catch((error) => console.log(error));
+        .get("/report/summary/student/attendance/percentage")
+        .then((response) => (this.attendance = response.data.attendance));
     },
   },
 };

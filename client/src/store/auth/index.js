@@ -48,6 +48,8 @@ export default {
           commit("SET_TOKEN", null);
           commit("SET_AUTH_USER", null);
           localStorage.removeItem("token");
+          localStorage.removeItem("role");
+          localStorage.removeItem("accComplete");
           router.push("/");
         }
       } else {

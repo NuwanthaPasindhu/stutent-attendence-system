@@ -25,9 +25,7 @@ export default {
   watch: {
     rendered(newValue, oldValue) {
       if (newValue != oldValue) {
-        console.log(newValue);
         this.chartGen();
-        this.chartGen2();
       }
     },
   },
@@ -39,7 +37,6 @@ export default {
           r.data.sections.map((section) =>
             this.sectionList.push(section.details)
           );
-          this.rendered = true;
         })
         .catch((e) => {
           console.log(e);
@@ -47,7 +44,9 @@ export default {
     },
     getTodayAttendanceReport() {
       axios.get("/report/summary/school").then((response) => {
-        console.log(response.data);
+        this.rendered = false;
+        this.attendance = response.data.attendance;
+        this.rendered = true;
       });
     },
     chartGen() {
@@ -59,9 +58,7 @@ export default {
           datasets: [
             {
               label: "Today Attendance",
-              data: [
-                65, 59, 80, 81, 56, 55, 40, 65, 59, 80, 81, 56, 55, 40, 5, 10,
-              ],
+              data: this.attendance,
               backgroundColor: [
                 "rgba(119,79,82,.4)",
                 "rgba(12,234,138,.4)",

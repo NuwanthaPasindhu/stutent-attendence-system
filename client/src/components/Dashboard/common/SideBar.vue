@@ -152,6 +152,22 @@
                   <span>Attendance History</span>
                 </router-link>
               </li>
+              <li class="nav-item">
+                <router-link
+                  to="/student/attendance/percentage"
+                  class="nav-link"
+                >
+                  <box-icon
+                    name="pie-chart-alt"
+                    type="solid"
+                    :animation="IconConfig.animation"
+                    :color="IconConfig.color"
+                    :size="IconConfig.size"
+                  ></box-icon>
+
+                  <small>Attendance Percentage</small>
+                </router-link>
+              </li>
             </template>
             <hr class="divider</hr>" />
 

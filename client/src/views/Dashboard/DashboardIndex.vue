@@ -25,28 +25,108 @@
             </div>
           </div>
         </div>
+        <div class="row" v-if="user.role == 'ADMIN'">
+          <div class="col-lg-12 col-md-12">
+            <div class="card w-100">
+              <div class="card-body row">
+                <div
+                  class="card col-lg-6 col-sm-12"
+                  v-for="(section, key) in allSections"
+                  :key="key"
+                >
+                  <div class="card-header d-flex justify-content-between">
+                    {{ section.details }}
+                    <button
+                      class="btn btn-success"
+                      @click="get_details(section._id)"
+                      data-bs-toggle="modal"
+                      data-bs-target="#exampleModal"
+                    >
+                      Details
+                    </button>
+                  </div>
+                  <div class="card-body">
+                    <PieChart :id="section.name" :section="section._id" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <dashboard-footer />
     </div>
     <!-- Dashboard  Contents -->
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="exampleModal"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+      v-if="user.role == 'ADMIN'"
+    >
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title heading" id="exampleModalLabel">
+              Section Details
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Class</th>
+                    <th>Attendance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(attendance, key) in allAttendance" :key="key">
+                    <td>
+                      {{ key + 1 }}
+                    </td>
+                    <td>
+                      {{ attendance.class }}
+                    </td>
+                    <td>
+                      {{ attendance.attendance }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>TODAY ATTENDENCE</td>
+                    <td colspan="2">
+                      <b class="text-center">
+                        {{ tdyAttendance }}
+                      </b>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import { reactive } from "vue";
 import ClassAttendance from "@/components/Dashboard/summary/ClassAttendance.vue";
 import SchoolAttendance from "@/components/Dashboard/summary/SchoolAttendance.vue";
 import SectionAttendance from "@/components/Dashboard/summary/SectionAttendance.vue";
-
+import axios from "axios";
+import PieChart from "@/components/Dashboard/charts/PieChart.vue";
 export default {
-  setup() {
-    const state = reactive({
-      User: null,
-      role: null,
-    });
-    return { state };
-  },
   computed: mapGetters({
     user: "auth/GET_USER",
   }),
@@ -54,15 +134,63 @@ export default {
     return {
       nav_active: false,
       attendance: {},
+      allSections: [],
+      allAttendance: [],
+      tdyAttendance: 0,
     };
   },
-  created() {},
+  mounted() {
+    if (this.user.role == "ADMIN") {
+      this.sections();
+    }
+  },
+  watch: {
+    user(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        if (newValue.role == "ADMIN") {
+          this.sections();
+        }
+      }
+    },
+  },
+
   methods: {
     toggle(value) {
       this.nav_active = value;
     },
+
+    sections() {
+      axios
+        .get("sections/all")
+        .then((r) => {
+          this.allSections = r.data.sections;
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    },
+    get_details(id) {
+      axios
+        .get("report/summary/section/all-class?sectionID=" + id)
+        .then((r) => {
+          this.allAttendance = r.data.attendance;
+          this.tdyAttendance = 0;
+          r.data.attendance.map((atd) => {
+            this.tdyAttendance = this.tdyAttendance + atd.attendance;
+          });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+      console.log(id);
+    },
   },
-  components: { ClassAttendance, SectionAttendance, SchoolAttendance },
+  components: {
+    ClassAttendance,
+    SectionAttendance,
+    SchoolAttendance,
+    PieChart,
+  },
 };
 </script>
 
