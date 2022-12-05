@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const validator = (Schema) => (payload) =>
   Schema.validate(payload, { abortEarly: false });
@@ -6,28 +6,26 @@ const validator = (Schema) => (payload) =>
 const sectionValidationSchema = Joi.object({
   section: Joi.string().required().trim(),
   year: Joi.date().required(),
-  SectionHeadName: Joi.string().required(),
-  email: Joi.string().required().email(),
-  mobileNumber: Joi.string()
-    .trim()
-    .max(11)
-    .min(10)
-    .required()
-    .label("Mobile Number"),
+  userID: Joi.string().required().trim(),
 });
 
 const teacherValidationSchema = Joi.object({
-  class: Joi.string().required().trim(),
-  year: Joi.date().required(),
-  classTeacherName: Joi.string().required(),
+  sectionClass: Joi.string().required().trim(),
+  userID: Joi.string().required().trim(),
+});
+
+const newUserValidationSchema = Joi.object({
   email: Joi.string().required().email(),
+  fullName: Joi.string().trim().required().label("Full Name"),
   mobileNumber: Joi.string()
     .trim()
     .max(11)
     .min(10)
     .required()
     .label("Mobile Number"),
+  address: Joi.string().trim().required(),
 });
 
+module.exports.validatedNewUser = validator(newUserValidationSchema);
 module.exports.validatedSection = validator(sectionValidationSchema);
 module.exports.validatedTeacher = validator(teacherValidationSchema);

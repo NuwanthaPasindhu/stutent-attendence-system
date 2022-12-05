@@ -17,7 +17,7 @@ const studentClassSchema = new mongoose.Schema(
       ref: "SectionClass",
     },
     year: {
-      type: Date,
+      type: Number,
       default: new Date().getFullYear(),
     },
   },

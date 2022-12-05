@@ -1,18 +1,18 @@
+const UserClasses = require("../model/UserClasses");
 const User = require("../model/User");
 const File = require("../model/File");
 const fs = require("fs");
-const { otpVerificationMail } = require("./emailController");
 const { comparePassword, hashPassword } = require("../util/password");
 const {
   validateLogin,
   validateProfilePic,
   validateProfileComplete,
-  validateOtp,
-  validateResendOtp,
+  validatedUpdateProfile,
+  validatedPassword,
 } = require("../util/validation/authValidation");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
-const OTP = require("../util/otp");
+const { USER_ROLE_ADMIN } = require("../enum");
 
 module.exports.login = async (request, response) => {
   const payload = request.body;
@@ -67,6 +67,7 @@ module.exports.authenticatedUser = async (request, response) => {
   const authenticatedUserWithProfile = await authenticatedUser.populate(
     "profilePic"
   );
+
   response.status(200).json({
     status: 200,
     authenticatedUser: authenticatedUser.profilePic
@@ -103,7 +104,7 @@ module.exports.profilePicUpload = async (request, response) => {
       return;
     }
   }
- 
+
   try {
     const existingUserById = await User.findById(payload.id);
     if (existingUserById.profilePic !== undefined) {
@@ -129,9 +130,9 @@ module.exports.profilePicUpload = async (request, response) => {
       profilePic: saveFile._id,
     });
     if (existingUserById) {
-      response.status(200).json({
-        status: 200,
-        message: "Profile Pic Uploaded",
+      response.status(201).json({
+        status: 201,
+        path: saveFile.link,
       });
       return;
     }
@@ -142,7 +143,6 @@ module.exports.profilePicUpload = async (request, response) => {
     });
     return;
   }
-
 };
 
 module.exports.profileComplete = async (request, response) => {
@@ -165,17 +165,6 @@ module.exports.profileComplete = async (request, response) => {
     });
     return;
   }
-
-  //  FIND THE USER BY EMAIL
-  const findUserByEmail = await User.find({ email: payload.email });
-  if (findUserByEmail.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Email already exist",
-    });
-    return;
-  }
-
   //  FIND THE USER BY MOBILE NUMBER
   const findUserByMobileNumber = await User.find({
     mobileNumber: payload.mobileNumber,
@@ -210,6 +199,125 @@ module.exports.profileComplete = async (request, response) => {
       response.status(200).json({
         status: 200,
         message: "Profile Updated Successfully",
+      });
+      return;
+    }
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+};
+module.exports.profileUpdate = async (request, response) => {
+  const params = request.params;
+  const payload = request.body;
+  // VALIDATE THE REQUEST PARAMS ID
+  if (!params.id) {
+    response.status(400).json({
+      status: 400,
+      message: "Invalid Request",
+    });
+    return;
+  }
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedUpdateProfile(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  const isValidObjectId = mongoose.Types.ObjectId.isValid(params.id);
+  if (!isValidObjectId) {
+    response.status(400).json({
+      status: 400,
+      message: "invalid user id",
+    });
+    return;
+  }
+
+  try {
+    const existingUserById = await User.findById(params.id);
+    if (!existingUserById.status) {
+      response.status(400).json({
+        status: 400,
+        message: "Profile Not Activate Please Active Your Account",
+      });
+      return;
+    }
+
+    const updateUserById = await User.findByIdAndUpdate(params.id, {
+      fullName: payload.fullName,
+      mobileNumber: payload.mobileNumber,
+      email: payload.email,
+      address: payload.address,
+    });
+    if (updateUserById) {
+      response.status(200).json({
+        status: 200,
+        message: "Profile Updated Successfully",
+      });
+      return;
+    }
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+};
+module.exports.passwordUpdate = async (request, response) => {
+  const params = request.params;
+  const payload = request.body;
+  // VALIDATE THE REQUEST PARAMS ID
+  if (!params.id) {
+    response.status(400).json({
+      status: 400,
+      message: "Invalid Request",
+    });
+    return;
+  }
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedPassword(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  const isValidObjectId = mongoose.Types.ObjectId.isValid(params.id);
+  if (!isValidObjectId) {
+    response.status(400).json({
+      status: 400,
+      message: "invalid user id",
+    });
+    return;
+  }
+
+  try {
+    const existingUserById = await User.findById(params.id);
+    if (!existingUserById.status) {
+      response.status(400).json({
+        status: 400,
+        message: "Profile Not Activate Please Active Your Account",
+      });
+      return;
+    }
+
+    const updateUserById = await User.findByIdAndUpdate(params.id, {
+      password: hashPassword(payload.password),
+    });
+    if (updateUserById) {
+      response.status(200).json({
+        status: 200,
+        message: "Password Updated Successfully",
       });
       return;
     }

@@ -1,11 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const studentSchema = new mongoose.Schema(
   {
-    profilePic: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "File",
-      required: true,
-    },
     admissionNumber: {
       type: Number,
       required: true,

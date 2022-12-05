@@ -1,10 +1,17 @@
-const { USER_ROLE_SECTION_HEAD } = require("../enum");
+const {
+  USER_ROLE_SECTION_HEAD,
+  USER_ROLE_ADMIN,
+  USER_ROLE_TEACHER,
+} = require("../enum");
 const Selection = require("../model/Section");
 const UserClasses = require("../model/UserClasses");
 const SectionClass = require("../model/Sectionclasses");
 const { randomPasswordGenerator, hashPassword } = require("../util/password");
 const User = require("../model/User");
-const { validatedSection } = require("../util/validation/accValidation");
+const {
+  validatedSection,
+  validatedNewUser,
+} = require("../util/validation/accValidation");
 const { default: mongoose } = require("mongoose");
 const Section = require("../model/Section");
 const { newAccNotification } = require("./emailController");
@@ -24,28 +31,6 @@ module.exports.createSectionHead = async (request, response) => {
     return;
   }
 
-  //  FIND THE USER BY EMAIL
-  const findUserByEmail = await User.find({ email: payload.email });
-  if (findUserByEmail.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Email already exist",
-    });
-    return;
-  }
-
-  //  FIND THE USER BY MOBILE NUMBER
-  const findUserByMobileNumber = await User.find({
-    mobileNumber: payload.mobileNumber,
-  });
-  if (findUserByMobileNumber.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Mobile Number already exist",
-    });
-    return;
-  }
-
   // CHECK SECTION ID IS A REAL OBJECT ID
   if (!mongoose.Types.ObjectId.isValid(payload.section)) {
     response.status(400).json({
@@ -54,16 +39,17 @@ module.exports.createSectionHead = async (request, response) => {
     });
     return;
   }
-
-  // CHECKING IF THE SECTION ID EXISTS
-  const checkSectionIdExist = await Section.findById(payload.section);
-  if (!checkSectionIdExist) {
+  // CHECK USER ID IS A REAL OBJECT ID
+  if (!mongoose.Types.ObjectId.isValid(payload.userID)) {
     response.status(400).json({
       status: 400,
-      message: "Invalid Section ID",
+      message: "Invalid ObjectId",
     });
     return;
   }
+
+  //  FIND THE USER BY userID
+  const findUserByEmail = await User.findById(payload.userID);
 
   // FETCH ADMIN CLASS
   const adminClass = await SectionClass.findOne({
@@ -84,18 +70,30 @@ module.exports.createSectionHead = async (request, response) => {
     });
     return;
   }
+  // CHECKING IF THE SECTION HEAD ALL READY ASSIGNED TO THE CLASS
+  const checkSectionHeadExisting = await UserClasses.findOne({
+    year: payload.year,
+    userId: payload.userID,
+  });
+  if (checkSectionHeadExisting) {
+    const sectionHeadExistingClass = await checkSectionHeadExisting.populate([
+      "classId",
+      "sectionId",
+    ]);
+    response.status(400).json({
+      status: 400,
+      message: `${findUserByEmail.fullName} is already assigned to  the ${sectionHeadExistingClass.sectionId.details} ,${sectionHeadExistingClass.classId.details}`,
+    });
+    return;
+  }
 
-  // CREATE THE USER
+  // UPDATE THE USER
   try {
-    const newUser = new User({
-      fullName: payload.SectionHeadName,
-      email: payload.email,
-      mobileNumber: payload.mobileNumber,
+    await User.findByIdAndUpdate(payload.userID, {
       password: hashPassword(randomPassword),
       role: USER_ROLE_SECTION_HEAD,
+      status: true,
     });
-
-    latestUser = await newUser.save();
   } catch (error) {
     response.status(400).json({
       status: 400,
@@ -109,7 +107,7 @@ module.exports.createSectionHead = async (request, response) => {
     const newSectionHead = new UserClasses({
       classId: adminClass._id,
       sectionId: payload.section,
-      userId: latestUser._id,
+      userId: payload.userID,
       year: payload.year,
     });
     await newSectionHead.save();
@@ -124,8 +122,8 @@ module.exports.createSectionHead = async (request, response) => {
   // SEND MAIL
   try {
     newAccNotification(
-      payload.email,
-      payload.SectionHeadName,
+      findUserByEmail.email,
+      findUserByEmail.fullName,
       randomPassword,
       USER_ROLE_SECTION_HEAD
     );
@@ -147,9 +145,9 @@ module.exports.createSectionHead = async (request, response) => {
 module.exports.getAllSections = async (request, response) => {
   const allSections = await Selection.find();
 
-  const sections = allSections.filter(section => {
-    return section.name !== '*'
-  })
+  const sections = allSections.filter((section) => {
+    return section.name !== "*";
+  });
   response.status(200).json({
     status: 200,
     sections,
@@ -157,3 +155,162 @@ module.exports.getAllSections = async (request, response) => {
   return;
 };
 
+module.exports.getSelectedSections = async (request, response) => {
+  const params = request.params;
+  const sectionClasses = await UserClasses.find({
+    sectionId: params.id,
+    year: params.year,
+  }).populate([
+    { path: "userId", populate: { path: "profilePic" } },
+    { path: "sectionId" },
+    { path: "classId" },
+  ]);
+  response.status(200).json({
+    status: 200,
+    sectionClasses,
+  });
+  return;
+};
+
+module.exports.createAdmin = async (request, response) => {
+  const payload = request.body;
+  const randomPassword = randomPasswordGenerator();
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedNewUser(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  //  FIND THE USER BY MOBILE NUMBER
+  const findUserByMobileNumber = await User.find({
+    mobileNumber: payload.mobileNumber,
+  });
+  if (findUserByMobileNumber.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Mobile Number already exist",
+    });
+    return;
+  }
+  //  FIND THE USER BY EMAIL
+  const findUserByEmail = await User.findOne({ email: payload.email });
+  if (findUserByEmail) {
+    response.status(400).json({
+      status: 400,
+      message: "Email already exist",
+    });
+    return;
+  }
+  try {
+    const newUser = new User({
+      email: payload.email,
+      mobileNumber: payload.mobileNumber,
+      address: payload.address,
+      fullName: payload.fullName,
+      password: hashPassword(randomPassword),
+      role: USER_ROLE_ADMIN,
+      status: true,
+      profileComplete: true,
+    });
+
+    await newUser.save();
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+  // SEND MAIL
+  try {
+    newAccNotification(
+      payload.email,
+      payload.fullName,
+      randomPassword,
+      USER_ROLE_ADMIN
+    );
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+
+  response
+    .status(201)
+    .json({ status: 201, message: "new Admin User successfully created" });
+};
+module.exports.createTeacher = async (request, response) => {
+  const payload = request.body;
+  const randomPassword = randomPasswordGenerator();
+  // VALIDATE THE REQUEST BODY
+  const { error } = validatedNewUser(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details,
+    });
+    return;
+  }
+
+  //  FIND THE USER BY MOBILE NUMBER
+  const findUserByMobileNumber = await User.find({
+    mobileNumber: payload.mobileNumber,
+  });
+  if (findUserByMobileNumber.length > 0) {
+    response.status(400).json({
+      status: 400,
+      message: "Mobile Number already exist",
+    });
+    return;
+  }
+
+  //  FIND THE USER BY EMAIL
+  const findUserByEmail = await User.findOne({ email: payload.email });
+  if (findUserByEmail) {
+    response.status(400).json({
+      status: 400,
+      message: "Email already exist",
+    });
+    return;
+  }
+
+  try {
+    const newUser = new User({
+      email: payload.email,
+      mobileNumber: payload.mobileNumber,
+      address: payload.address,
+      fullName: payload.fullName,
+      password: hashPassword(randomPassword),
+      role: USER_ROLE_TEACHER,
+      profileComplete: true,
+    });
+    await newUser.save();
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.message,
+    });
+    return;
+  }
+
+  response
+    .status(201)
+    .json({ status: 201, message: "new Teacher successfully created" });
+};
+
+module.exports.getAllAdminUsers = async (request, response) => {
+  const allUsers = await User.find({ role: USER_ROLE_ADMIN }).populate(
+    "profilePic"
+  );
+
+  response.status(200).json({
+    allUsers,
+  });
+  return;
+};

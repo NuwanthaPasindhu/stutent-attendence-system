@@ -6,26 +6,13 @@ const User = require("../model/User");
 const { validatedTeacher } = require("../util/validation/accValidation");
 const { default: mongoose } = require("mongoose");
 const { newAccNotification } = require("./emailController");
+const Sectionclasses = require("../model/Sectionclasses");
 
 module.exports.createTeacher = async (request, response) => {
   const payload = request.body;
   const authenticatedUser = request.user;
   const randomPassword = randomPasswordGenerator();
   let latestUser;
-
-  // GET AUTHENTICATED USER's SECTION
-  const authenticatedUserSection = await UserClasses.findOne({
-    userId: authenticatedUser._id,
-    year: payload.year,
-  });
-
-  if (!authenticatedUserSection) {
-    response.status(400).json({
-      status: 400,
-      message: `You haven't permission to Create ${payload.year} Teachers Accounts`,
-    });
-    return;
-  }
 
   // VALIDATE THE REQUEST BODY
   const { error } = validatedTeacher(payload);
@@ -37,72 +24,80 @@ module.exports.createTeacher = async (request, response) => {
     return;
   }
 
-  //  FIND THE USER BY EMAIL
-  const findUserByEmail = await User.find({ email: payload.email });
-  if (findUserByEmail.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Email already exist",
-    });
-    return;
-  }
-
-  //  FIND THE USER BY MOBILE NUMBER
-  const findUserByMobileNumber = await User.find({
-    mobileNumber: payload.mobileNumber,
-  });
-  if (findUserByMobileNumber.length > 0) {
-    response.status(400).json({
-      status: 400,
-      message: "Mobile Number already exist",
-    });
-    return;
-  }
-
-  // CHECK SECTION ID IS A REAL OBJECT ID
-  if (!mongoose.Types.ObjectId.isValid(payload.class)) {
+  // CHECK SECTION CLASS ID IS A REAL OBJECT ID
+  if (!mongoose.Types.ObjectId.isValid(payload.sectionClass)) {
     response.status(400).json({
       status: 400,
       message: "Invalid ObjectId",
     });
     return;
   }
-
-  // CHECKING IF THE CLASS ID EXISTS
-  const checkClassIdExist = await SectionClass.findById(payload.class);
-  if (!checkClassIdExist) {
+  // CHECK USER ID IS A REAL OBJECT ID
+  if (!mongoose.Types.ObjectId.isValid(payload.userID)) {
     response.status(400).json({
       status: 400,
-      message: "Invalid Class ID",
+      message: "Invalid ObjectId",
     });
     return;
   }
+  // CHECK SECTION CLASS ID IS A REAL ID
 
-  // CHECKING IF THE SECTION HEAD ALL READY EXISTS FOR THIS YEAR USING SECTION ID AND YEAR AND CLASS ID
-  const checkTeacherHead = await UserClasses.findOne({
-    year: payload.year,
-    sectionId: authenticatedUserSection.sectionId,
-    classId: payload.class,
+  const checkSectionClass = await Sectionclasses.findById(payload.sectionClass);
+  if (!checkSectionClass) {
+    response
+      .status(400)
+      .json({ status: 400, message: "Class is not a valid class." });
+    return;
+  }
+
+  //  FIND THE USER BY userID
+  const findUserByEmail = await User.findById(payload.userID);
+  if (!findUserByEmail) {
+    response.status(400).json({
+      status: 400,
+      message: "User not found",
+    });
+    return;
+  }
+  // FETCH THE AUTHENTICATED USER SECTION
+  const authUserSection = await UserClasses.findOne({
+    userId: authenticatedUser._id,
+    year: new Date().getFullYear(),
+  }).populate(["userId", "sectionId", "classId"]);
+
+  // CHECKING IF THE TEAChER ALL READY EXISTS FOR THIS YEAR USING SECTION ID CLASS ID and YEAR
+  const checkTeacher = await UserClasses.findOne({
+    year: authUserSection.year,
+    sectionId: authUserSection.sectionId._id,
+    classId: payload.sectionClass,
   });
-  if (checkTeacherHead) {
+  if (checkTeacher) {
     response.status(400).json({
       status: 400,
-      message: `The class teacher already exists for ${payload.year}`,
+      message: `The teacher already exists for ${authUserSection.year}`,
     });
     return;
   }
 
-  // CREATE THE USER
+  // CHECKING IF THE Teacher ALL READY ASSIGNED TO THE CLASS
+  const checkTeacherExisting = await UserClasses.findOne({
+    year: authUserSection.year,
+    userId: payload.userID,
+  }).populate(["classId", "sectionId"]);
+  if (checkTeacherExisting) {
+    response.status(400).json({
+      status: 400,
+      message: `${findUserByEmail.fullName} is already assigned to  the ${checkTeacherExisting.sectionId.details} ,${checkTeacherExisting.classId.details}`,
+    });
+    return;
+  }
+  // UPDATE THE USER
   try {
-    const newUser = new User({
-      fullName: payload.classTeacherName,
-      email: payload.email,
-      mobileNumber: payload.mobileNumber,
+    await User.findByIdAndUpdate(payload.userID, {
       password: hashPassword(randomPassword),
       role: USER_ROLE_TEACHER,
+      status: true,
     });
-
-    latestUser = await newUser.save();
   } catch (error) {
     response.status(400).json({
       status: 400,
@@ -110,16 +105,15 @@ module.exports.createTeacher = async (request, response) => {
     });
     return;
   }
-
   // ASSIGN USER TO SECTION HEAD CLASS
   try {
-    const newSectionHead = new UserClasses({
-      classId: payload.class,
-      sectionId: authenticatedUserSection.sectionId,
-      userId: latestUser._id,
-      year: payload.year,
+    const newTeacher = new UserClasses({
+      classId: payload.sectionClass,
+      sectionId: authUserSection.sectionId._id,
+      userId: payload.userID,
+      year: authUserSection.year,
     });
-    await newSectionHead.save();
+    await newTeacher.save();
   } catch (error) {
     response.status(400).json({
       status: 400,
@@ -131,8 +125,8 @@ module.exports.createTeacher = async (request, response) => {
   // SEND MAIL
   try {
     newAccNotification(
-      payload.email,
-      payload.classTeacherName,
+      findUserByEmail.email,
+      findUserByEmail.fullName,
       randomPassword,
       USER_ROLE_TEACHER
     );
@@ -143,6 +137,7 @@ module.exports.createTeacher = async (request, response) => {
     });
     return;
   }
+
   response.status(201).json({
     status: 201,
     message: "Successfully Created",
@@ -163,4 +158,24 @@ module.exports.allClasses = async (request, response) => {
   });
   return;
 };
-module.exports.allClassesWithTeacher = async (request, response) => {};
+module.exports.sectionTeacherList = async (request, response) => {
+  const authenticatedUser = request.user;
+  // FETCH THE AUTHENTICATED USER SECTION
+  const authUserSection = await UserClasses.findOne({
+    userId: authenticatedUser._id,
+    year: new Date().getFullYear(),
+  });
+  const sectionTeacherList = await UserClasses.find({
+    sectionId: authUserSection.sectionId,
+    year: new Date().getFullYear(),
+  }).populate([
+    { path: "userId", select: ["fullName", "mobileNumber"] },
+    { path: "classId" },
+  ]);
+
+  response.status(200).json({
+    status: 200,
+    sectionTeacherList,
+  });
+  return;
+};
