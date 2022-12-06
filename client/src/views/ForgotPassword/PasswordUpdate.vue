@@ -80,7 +80,7 @@ export default {
       confirm_password: "",
       successMessage: "",
       errorMessage: "",
-      count: 10,
+      count: 5,
       Token: "",
       isLoading: false,
     });
@@ -123,7 +123,7 @@ export default {
       if (!this.v$.$error) {
         this.state.isLoading = true;
         axios
-          .post("auth/forgot-password-update/" + this.state.Token, {
+          .post("auth/forgot-password-update?token=" + this.state.Token, {
             password: this.state.password,
           })
           .then((response) => {

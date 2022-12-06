@@ -7,6 +7,8 @@ const {
   profileComplete,
   profileUpdate,
   passwordUpdate,
+  emailVerification,
+  forgotPasswordUpdate,
 } = require("../controller/authController");
 const { profileUpload } = require("../middleware/fileUpload");
 
@@ -23,5 +25,7 @@ Router.put(
 Router.put("/profile-complete", api, profileComplete);
 Router.put("/profile-update/:id", api, profileUpdate);
 Router.put("/password-update/:id", api, passwordUpdate);
+Router.post("/email-verification", emailVerification);
+Router.post("/forgot-password-update/", forgotPasswordUpdate);
 
 module.exports = Router;

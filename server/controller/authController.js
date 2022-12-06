@@ -1,18 +1,22 @@
-const UserClasses = require("../model/UserClasses");
+const { otpVerificationMail } = require("./emailController");
 const User = require("../model/User");
 const File = require("../model/File");
 const fs = require("fs");
-const { comparePassword, hashPassword } = require("../util/password");
+const {
+  comparePassword,
+  hashPassword,
+  randomPasswordGenerator,
+} = require("../util/password");
 const {
   validateLogin,
   validateProfilePic,
   validateProfileComplete,
   validatedUpdateProfile,
   validatedPassword,
+  validateResendOtp,
 } = require("../util/validation/authValidation");
 const jwt = require("jsonwebtoken");
 const { default: mongoose } = require("mongoose");
-const { USER_ROLE_ADMIN } = require("../enum");
 
 module.exports.login = async (request, response) => {
   const payload = request.body;
@@ -144,7 +148,6 @@ module.exports.profilePicUpload = async (request, response) => {
     return;
   }
 };
-
 module.exports.profileComplete = async (request, response) => {
   const payload = request.body;
   // VALIDATE THE REQUEST BODY
@@ -326,6 +329,89 @@ module.exports.passwordUpdate = async (request, response) => {
       status: 400,
       message: error.message,
     });
+    return;
+  }
+};
+module.exports.emailVerification = async (request, response) => {
+  const payload = request.body;
+  let user;
+  // VALIDATE THE REQUEST BODY
+  const { error } = validateResendOtp(payload);
+  if (error) {
+    response.status(400).json({
+      status: 400,
+      message: error.details[0].message,
+    });
+    return;
+  }
+
+  const token = hashPassword(randomPasswordGenerator());
+
+  //  FIND THE USER BY EMAIL
+  try {
+    user = await User.findOneAndUpdate(
+      { email: payload.email },
+      { passwordResetToken: token, status: false }
+    );
+  } catch (error) {
+    response.status(400).json({
+      status: 400,
+      message: "Invalid email Address",
+    });
+    return;
+  }
+
+  otpVerificationMail(user.email, token);
+  response.status(200).json({ status: 200, message: token });
+
+  return;
+};
+
+module.exports.forgotPasswordUpdate = async (request, response) => {
+  const payload = request.body;
+  const query = request.query;
+  // VALIDATE THE REQUEST BODY
+  if (query.token) {
+    // FETCH THE USER BY TOKEN
+    const findUserByToken = await User.findOne({
+      passwordResetToken: query.token,
+    });
+    if (!findUserByToken) {
+      response.status(400).json({ status: 400, message: "Invalid token." });
+      return;
+    }
+
+    const { error } = validatedPassword(payload);
+    if (error) {
+      response.status(400).json({
+        status: 400,
+        message: error.details,
+      });
+      return;
+    }
+    try {
+      await User.findOneAndUpdate(
+        { passwordResetToken: query.token },
+        {
+          passwordResetToken: null,
+          status: true,
+          password: hashPassword(payload.password),
+        }
+      );
+      response.status(200).json({
+        status: 200,
+        message: "Password updated.",
+      });
+      return;
+    } catch (error) {
+      response.status(400).json({
+        status: 400,
+        message: error.message,
+      });
+      return;
+    }
+  } else {
+    response.status(400).json({ status: 400, message: "Token is required" });
     return;
   }
 };

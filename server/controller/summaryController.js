@@ -267,7 +267,6 @@ module.exports.stdAttendancePercentage = async (request, response) => {
   });
   // ALL ATTENDANCE MARKED DATES
   const allAttendanceDates = await StdAttendence.find({
-    classId: authUserSection.classId,
     sectionId: authUserSection.sectionId,
     date: { $regex: today.getFullYear() },
   }).select("date");

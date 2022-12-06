@@ -1,13 +1,13 @@
 const transporter = require("../config/mail.config");
 
-module.exports.otpVerificationMail = async (to, otp) => {
+module.exports.otpVerificationMail = async (to, token) => {
   const mail = {
     from: process.env.MAIL_USERNAME,
     to: to,
-    subject: "OTP",
+    subject: "Email verification",
     template: "otp",
     context: {
-      otp,
+      token,
     },
   };
   try {
@@ -17,7 +17,7 @@ module.exports.otpVerificationMail = async (to, otp) => {
   }
 };
 
-module.exports.newAccNotification = async (email,name,password,role) => {
+module.exports.newAccNotification = async (email, name, password, role) => {
   const mail = {
     from: process.env.MAIL_USERNAME,
     to: email,
@@ -30,9 +30,9 @@ module.exports.newAccNotification = async (email,name,password,role) => {
       role,
     },
   };
-   try {
-     await transporter.sendMail(mail);
-   } catch (error) {
-     console.log(error);
-   }
-}
+  try {
+    await transporter.sendMail(mail);
+  } catch (error) {
+    console.log(error);
+  }
+};
