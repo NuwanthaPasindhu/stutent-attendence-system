@@ -1,0 +1,12 @@
+[
+    {
+        "fullName": "Admin",
+        "mobileNumber": "0123456789",
+        "email": "admin@admin.com",
+        "address": "admin/address",
+        "role": "ADMIN",
+        "status": true,
+        "profileComplete": false,
+        "password": "$2a$10$JlkaiCIbJdFncLa3xC.OSOSKSXYFG9C648vv/P/wD/O1FYXI6N8cK"
+    }
+]

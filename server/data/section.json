@@ -1,0 +1,70 @@
+[
+    {
+        "name": "*",
+        "details": "ADMIN SECTION"
+    },
+    {
+        "name": 1,
+        "details": "SECTION 01"
+    },
+    {
+        "name": 2,
+        "details": "SECTION 02"
+    },
+    {
+        "name": 3,
+        "details": "SECTION 03"
+    },
+    {
+        "name": 4,
+        "details": "SECTION 04"
+    },
+    {
+        "name": 5,
+        "details": "SECTION 05"
+    },
+    {
+        "name": 6,
+        "details": "SECTION 06"
+    },
+    {
+        "name": 7,
+        "details": "SECTION 07"
+    },
+    {
+        "name": 8,
+        "details": "SECTION 08"
+    },
+    {
+        "name": 9,
+        "details": "SECTION 09"
+    },
+    {
+        "name": 10,
+        "details": "SECTION 10"
+    },
+    {
+        "name": 11,
+        "details": "SECTION 11"
+    },
+    {
+        "name": "TECH",
+        "details": "SECTION TECH"
+    },
+    {
+        "name": "MATHS",
+        "details": "SECTION MATHS"
+    },
+    {
+        "name": "BIO",
+        "details": "SECTION BIO"
+    },
+    {
+        "name": "ART",
+        "details": "SECTION ART"
+    },
+    {
+        "name": "COMMERCE",
+        "details": "SECTION COMMERCE"
+    }
+]
