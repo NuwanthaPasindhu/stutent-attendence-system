@@ -46,6 +46,7 @@ export default {
       axios.get("/report/summary/school").then((response) => {
         this.rendered = false;
         this.attendance = response.data.attendance;
+        console.log(response.data.attendance)
         this.rendered = true;
       });
     },
