@@ -76,7 +76,7 @@ export default {
       nav_active: false,
       attendance_history: [],
       errorMessage: "",
-      historyDate: `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${
+      historyDate: `${new Date().getFullYear()}-0${new Date().getMonth() + 1}-0${
         new Date().getDate() - 1
       }`,
       abLength: 0,

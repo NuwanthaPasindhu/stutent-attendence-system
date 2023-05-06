@@ -258,7 +258,7 @@ module.exports.attendance = async (request, response) => {
   const previousAttendance = await StdAttendence.findOne({
     stdId: studentProfile._id,
     attendance: true,
-    date: `${Today.getFullYear()}-${Today.getMonth() + 1}-${Today.getDate()}`,
+    date: `${Today.getFullYear()}-0${Today.getMonth() + 1}-0${Today.getDate()}`,
   });
 
   if (!previousAttendance) {
@@ -301,7 +301,7 @@ module.exports.todayAttendance = async (request, response) => {
   const todayAttendance = await StdAttendence.find({
     sectionId: authUserSection.sectionId,
     classId: authUserSection.classId,
-    date: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`,
+    date: `${today.getFullYear()}-0${today.getMonth() + 1}-0${today.getDate()}`,
   }).populate("stdId");
 
   response.status(200).json({

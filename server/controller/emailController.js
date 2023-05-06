@@ -7,7 +7,8 @@ module.exports.otpVerificationMail = async (to, token) => {
     subject: "Email verification",
     template: "otp",
     context: {
-      token,
+      link: `${process.env.APP_CLIENT_URL}password-update?token=${token}`,
+    
     },
   };
   try {

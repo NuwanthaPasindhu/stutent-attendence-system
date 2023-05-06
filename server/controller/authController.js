@@ -361,8 +361,12 @@ module.exports.emailVerification = async (request, response) => {
     return;
   }
 
-  otpVerificationMail(user?.email, token);
-  response.status(200).json({ status: 200, message: token });
+
+  otpVerificationMail(user.email, token);
+  response
+    .status(200)
+    .json({ status: 200, message: "email verification sended successfully" });
+
 
   return;
 };

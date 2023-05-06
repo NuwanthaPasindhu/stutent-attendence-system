@@ -21,7 +21,7 @@ module.exports.classAttendance = async (request, response) => {
   const classID = query.classID || authUserSection.classId;
   const date =
     query.date ||
-    `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    `${today.getFullYear()}-0${today.getMonth() + 1}-0${today.getDate()}`;
   const sectionId = query.sectionId || authUserSection.sectionId;
   // ALL STUDENTS IN CLASS
 
@@ -74,7 +74,7 @@ module.exports.sectionAttendance = async (request, response) => {
 
   const date =
     query.date ||
-    `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+    `${today.getFullYear()}-0${today.getMonth() + 1}-0${today.getDate()}`;
   const sectionId = query.sectionID || authUserSection.sectionId;
   // ALL STUDENTS IN SECTION
 
@@ -116,7 +116,7 @@ module.exports.allSectionClassesAttendance = async (request, response) => {
   const today = new Date();
   const classAttendance = [];
   const date =
-    `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}` ||
+    `${today.getFullYear()}-0${today.getMonth() + 1}-0${today.getDate()}` ||
     query.date;
   if (!query.sectionID) {
     response.status(400).json({ status: 400, message: " sectionId required" });
@@ -172,9 +172,9 @@ module.exports.allSectionClassesAttendance = async (request, response) => {
 module.exports.schoolAttendance = async (request, response) => {
   const today = new Date();
   const attendance = [];
-  const day = `${today.getFullYear()}-${
+  const day = `${today.getFullYear()}-0${
     today.getMonth() + 1
-  }-${today.getDate()}`;
+  }-0${today.getDate()}`;
 
   // SECTION LIST IN SCHOOL
   const sections = await Section.find();
