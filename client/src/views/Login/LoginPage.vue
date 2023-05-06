@@ -123,7 +123,7 @@ export default {
             required
           ),
           minLength: helpers.withMessage(
-            "The password must be at least 9 characters",
+            "The password must be at least 8 characters",
             minLength(8)
           ),
         },

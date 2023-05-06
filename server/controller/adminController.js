@@ -305,9 +305,11 @@ module.exports.createTeacher = async (request, response) => {
 };
 
 module.exports.getAllAdminUsers = async (request, response) => {
-  const allUsers = await User.find({ role: USER_ROLE_ADMIN }).populate(
-    "profilePic"
-  );
+  const allUsers = await User.find({ role: USER_ROLE_ADMIN })
+    .populate("profilePic")
+    .sort({
+      createdAt: -1,
+    });
 
   response.status(200).json({
     allUsers,

@@ -150,7 +150,6 @@
                     </thead>
                     <tbody v-if="TableData.length > 0">
                       <tr v-for="(student, key) in TableData" :key="key">
-                        <td>{{ key + 1 }}</td>
                         <td>{{ student.stdId.admissionNumber }}</td>
                         <td>{{ student.stdId.fullName }}</td>
                         <td>
