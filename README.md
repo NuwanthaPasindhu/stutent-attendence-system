@@ -25,6 +25,9 @@ In the section head dashboard they can view their section daily student attendan
 
 In the Principal dashboard also, the Principal can view the daily attendance of all the school students and he can view section wise student attendance
 
+## Database diagram
+![DB-diagram](https://dl.dropbox.com/scl/fi/1ibq51fkdlatsjrhmql94/Student-Attendance-Marking-app.png?rlkey=6wekwn43we42v8upcuuvj0fgl&st=vhf9zuja&dl=0)
+
 ## Technologies and Packages Used
 
 - Vue js 
